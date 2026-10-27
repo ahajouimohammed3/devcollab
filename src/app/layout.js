@@ -1,17 +1,19 @@
-import { ClerkProvider } from '@clerk/nextjs';
-import './globals.css';
+import { LanguageProvider } from '@/context/LanguageContext'
+import './globals.css'
 
 export const metadata = {
   title: 'DevCollab - Project Management',
-  description: 'Manage your projects efficiently',
-};
+  description: 'Manage your workspaces and tasks efficiently',
+}
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body>{children}</body>
-      </html>
-    </ClerkProvider>
-  );
+    <html lang="fr">
+      <body>
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
+      </body>
+    </html>
+  )
 }
