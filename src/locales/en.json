@@ -1,0 +1,14 @@
+{
+  "workspaces": {
+    "title": "Workspaces",
+    "createTitle": "Create a New Workspace",
+    "nameLabel": "Workspace Name",
+    "namePlaceholder": "Ex: Development Team",
+    "descLabel": "Description",
+    "descPlaceholder": "Short description...",
+    "submitBtn": "Create Workspace",
+    "loading": "Creating...",
+    "currentList": "Current Workspaces",
+    "noWorkspaces": "No workspaces found. Get started by creating one!"
+  }
+}

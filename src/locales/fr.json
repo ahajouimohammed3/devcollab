@@ -1,0 +1,14 @@
+{
+  "workspaces": {
+    "title": "Espaces de travail",
+    "createTitle": "Créer un nouvel espace de travail",
+    "nameLabel": "Nom de l'espace",
+    "namePlaceholder": "Ex: Équipe de développement",
+    "descLabel": "Description",
+    "descPlaceholder": "Description courte...",
+    "submitBtn": "Créer l'espace",
+    "loading": "Création en cours...",
+    "currentList": "Espaces de travail actuels",
+    "noWorkspaces": "Aucun espace de travail pour le moment. Créez-en un !"
+  }
+}

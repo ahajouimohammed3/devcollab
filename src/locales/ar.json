@@ -1,0 +1,14 @@
+{
+  "workspaces": {
+    "title": "مساحات العمل",
+    "createTitle": "إنشاء مساحة عمل جديدة",
+    "nameLabel": "اسم المساحة",
+    "namePlaceholder": "مثال: فريق التطوير",
+    "descLabel": "الوصف",
+    "descPlaceholder": "وصف مختصر لمساحة العمل...",
+    "submitBtn": "إضافة مساحة العمل",
+    "loading": "جاري الإضافة...",
+    "currentList": "مساحات العمل الحالية",
+    "noWorkspaces": "لا توجد أي مساحة عمل حالياً. ابدأ بإنشاء واحدة!"
+  }
+}
