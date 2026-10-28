@@ -3,22 +3,33 @@
     "title": "Workspaces",
     "createTitle": "Create New Workspace",
     "nameLabel": "Workspace Name",
-    "namePlaceholder": "e.g., Development Team",
+    "namePlaceholder": "Enter workspace name...",
     "descLabel": "Description",
-    "descPlaceholder": "Workspace description...",
-    "submitBtn": "Add Workspace",
+    "descPlaceholder": "Enter a short description...",
+    "submitBtn": "Create Workspace",
     "loading": "Creating...",
-    "noWorkspaces": "No workspaces found yet."
+    "noWorkspaces": "No workspaces available yet."
   },
   "projects": {
-    "title": "Projects",
-    "createTitle": "Create New Project",
-    "nameLabel": "Project Name",
-    "namePlaceholder": "e.g., Design UI layout",
-    "descLabel": "Description",
-    "descPlaceholder": "Project description...",
-    "submitBtn": "Add Project",
-    "loading": "Creating...",
-    "noProjects": "No projects found in this workspace."
+    "title": "Kanban Task Board",
+    "createTitle": "Add New Task",
+    "nameLabel": "Task Title",
+    "namePlaceholder": "Enter task title...",
+    "descLabel": "Task Description",
+    "descPlaceholder": "Enter task details...",
+    "submitBtn": "Add Task",
+    "loading": "Adding...",
+    "searchPlaceholder": "Search tasks...",
+    "noTasks": "No tasks found"
+  },
+  "dashboard": {
+    "title": "Statistics Dashboard",
+    "homeLink": "Home",
+    "workspaces": "Workspaces",
+    "projects": "Projects",
+    "totalTasks": "Total Tasks",
+    "breakdownTitle": "Task Status Breakdown",
+    "completionRate": "Overall Completion Rate",
+    "loading": "Loading statistics..."
   }
 }

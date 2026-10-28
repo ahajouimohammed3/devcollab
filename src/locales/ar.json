@@ -3,22 +3,33 @@
     "title": "مساحات العمل",
     "createTitle": "إنشاء مساحة عمل جديدة",
     "nameLabel": "اسم مساحة العمل",
-    "namePlaceholder": "مثال: فريق التطوير",
+    "namePlaceholder": "أدخل اسم مساحة العمل...",
     "descLabel": "الوصف",
-    "descPlaceholder": "وصف مساحة العمل...",
-    "submitBtn": "إضافة مساحة عمل",
+    "descPlaceholder": "أدخل وصفاً قصيراً...",
+    "submitBtn": "إنشاء مساحة عمل",
     "loading": "جاري الإنشاء...",
-    "noWorkspaces": "لا توجد مساحات عمل حتى الآن."
+    "noWorkspaces": "لا توجد مساحات عمل حالياً."
   },
   "projects": {
-    "title": "المشاريع",
-    "createTitle": "إنشاء مشروع جديد",
-    "nameLabel": "اسم المشروع",
-    "namePlaceholder": "مثال: تصميم واجهة المستخدم",
-    "descLabel": "الوصف",
-    "descPlaceholder": "وصف المشروع...",
-    "submitBtn": "إضافة مشروع",
-    "loading": "جاري الإنشاء...",
-    "noProjects": "لا توجد مشاريع في مساحة العمل هذه."
+    "title": "لوحة المهام (Kanban)",
+    "createTitle": "إضافة مهمة جديدة",
+    "nameLabel": "عنوان المهمة",
+    "namePlaceholder": "أدخل عنوان المهمة...",
+    "descLabel": "وصف المهمة",
+    "descPlaceholder": "أدخل تفاصيل المهمة...",
+    "submitBtn": "إضافة المهمة",
+    "loading": "جاري الإضافة...",
+    "searchPlaceholder": "بحث عن مهمة...",
+    "noTasks": "لا توجد مهام مطابقة"
+  },
+  "dashboard": {
+    "title": "لوحة الإحصائيات",
+    "homeLink": "الرئيسية",
+    "workspaces": "مساحات العمل",
+    "projects": "المشاريع",
+    "totalTasks": "إجمالي المهام",
+    "breakdownTitle": "توزيع حالات المهام",
+    "completionRate": "نسبة الإنجاز الكلية",
+    "loading": "جاري تحميل الإحصائيات..."
   }
 }

@@ -1,24 +1,35 @@
 {
   "workspaces": {
-    "title": "Espaces de travail",
+    "title": "Espaces de Travail",
     "createTitle": "Créer un nouvel espace",
     "nameLabel": "Nom de l'espace",
-    "namePlaceholder": "ex: Équipe de développement",
+    "namePlaceholder": "Entrez le nom...",
     "descLabel": "Description",
-    "descPlaceholder": "Description de l'espace...",
-    "submitBtn": "Ajouter un espace",
-    "loading": "Création...",
-    "noWorkspaces": "Aucun espace de travail trouvé."
+    "descPlaceholder": "Entrez une courte description...",
+    "submitBtn": "Créer l'espace",
+    "loading": "Création en cours...",
+    "noWorkspaces": "Aucun espace de travail pour le moment."
   },
   "projects": {
-    "title": "Projets",
-    "createTitle": "Créer un nouveau projet",
-    "nameLabel": "Nom du projet",
-    "namePlaceholder": "ex: Conception de l'interface",
-    "descLabel": "Description",
-    "descPlaceholder": "Description du projet...",
-    "submitBtn": "Ajouter un projet",
-    "loading": "Création...",
-    "noProjects": "Aucun projet trouvé dans cet espace de travail."
+    "title": "Tableau des Tâches (Kanban)",
+    "createTitle": "Ajouter une nouvelle tâche",
+    "nameLabel": "Titre de la tâche",
+    "namePlaceholder": "Entrez le titre...",
+    "descLabel": "Description de la tâche",
+    "descPlaceholder": "Entrez les détails...",
+    "submitBtn": "Ajouter la tâche",
+    "loading": "Ajout en cours...",
+    "searchPlaceholder": "Rechercher une tâche...",
+    "noTasks": "Aucune tâche trouvée"
+  },
+  "dashboard": {
+    "title": "Tableau de Bord",
+    "homeLink": "Accueil",
+    "workspaces": "Espaces de Travail",
+    "projects": "Projets",
+    "totalTasks": "Total des Tâches",
+    "breakdownTitle": "Répartition des Tâches",
+    "completionRate": "Taux d'Achèvement Global",
+    "loading": "Chargement des statistiques..."
   }
 }
