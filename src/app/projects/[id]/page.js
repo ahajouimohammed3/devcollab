@@ -4,18 +4,19 @@ import { useState, useEffect, use, Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from '@/context/LanguageContext'
 import Link from 'next/link'
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 
 function ProjectContent({ params }) {
   const resolvedParams = use(params)
   const projectId = resolvedParams.id
 
-  const { t, locale, changeLanguage } = useTranslation()
+  const { t, locale } = useTranslation()
   const [project, setProject] = useState(null)
   const [tasks, setTasks] = useState([])
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDesc, setTaskDesc] = useState('')
   const [taskDueDate, setTaskDueDate] = useState('')
-  const [taskPriority, setTaskPriority] = useState('medium') // حقل الأولوية الجديد
+  const [taskPriority, setTaskPriority] = useState('medium')
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [loading, setLoading] = useState(false)
@@ -53,7 +54,7 @@ function ProjectContent({ params }) {
         title: taskTitle,
         description: taskDesc,
         due_date: taskDueDate || null,
-        priority: taskPriority, // حفظ الأولوية
+        priority: taskPriority,
         status: 'todo',
         project_id: projectId
       }
@@ -72,13 +73,19 @@ function ProjectContent({ params }) {
   }
 
   const handleUpdateStatus = async (taskId, newStatus) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
+    )
+
     const { error } = await supabase
       .from('tasks')
       .update({ status: newStatus })
       .eq('id', taskId)
 
-    if (error) console.error('Error updating status:', error.message)
-    else fetchData()
+    if (error) {
+      console.error('Error updating status:', error.message)
+      fetchData()
+    }
   }
 
   const handleDeleteTask = async (taskId) => {
@@ -91,240 +98,252 @@ function ProjectContent({ params }) {
     else fetchData()
   }
 
+  const onDragEnd = (result) => {
+    const { destination, source, draggableId } = result
+    if (!destination) return
+    if (destination.droppableId === source.droppableId && destination.index === source.index) return
+
+    const newStatus = destination.droppableId
+    handleUpdateStatus(draggableId, newStatus)
+  }
+
   const getPriorityBadge = (priority) => {
-    switch (priority) {
+    const p = priority ? priority.toLowerCase() : 'medium'
+    switch (p) {
       case 'high':
-        return <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">High</span>
+        return <span className="text-[10px] bg-rose-500/10 text-rose-600 border border-rose-500/20 px-2.5 py-1 rounded-lg font-bold tracking-wide">🔥 High</span>
       case 'medium':
-        return <span className="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-bold">Medium</span>
+        return <span className="text-[10px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-2.5 py-1 rounded-lg font-bold tracking-wide">⚡ Medium</span>
       case 'low':
-        return <span className="text-[10px] bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full font-bold">Low</span>
+        return <span className="text-[10px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2.5 py-1 rounded-lg font-bold tracking-wide">🌱 Low</span>
       default:
         return null
     }
   }
 
   const filteredTasks = tasks.filter((task) => {
-    const matchesSearch = 
+    const matchesSearch =
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
-    
+
     const matchesFilter = statusFilter === 'all' || task.status === statusFilter
 
     return matchesSearch && matchesFilter
   })
 
-  const todoTasks = filteredTasks.filter((t) => t.status === 'todo')
-  const inProgressTasks = filteredTasks.filter((t) => t.status === 'in_progress')
-  const doneTasks = filteredTasks.filter((t) => t.status === 'done')
+  const columns = [
+    { id: 'todo', title: '📌 To Do', headerColor: 'text-slate-700 bg-slate-100', tasks: filteredTasks.filter((t) => t.status === 'todo') },
+    { id: 'in_progress', title: '⏳ In Progress', headerColor: 'text-indigo-700 bg-indigo-50', tasks: filteredTasks.filter((t) => t.status === 'in_progress') },
+    { id: 'done', title: '✅ Done', headerColor: 'text-emerald-700 bg-emerald-50', tasks: filteredTasks.filter((t) => t.status === 'done') }
+  ]
 
   return (
-    <main className="p-8 max-w-6xl mx-auto">
-      {/* Top Navigation */}
+    <main className="p-8 max-w-7xl mx-auto min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/20 to-slate-100 font-sans">
+      
+      {/* Top Navigation Back Link */}
       <div className="flex justify-between items-center mb-6">
         {project && (
-          <Link className="text-blue-600 hover:underline text-sm font-semibold flex items-center gap-1" href={`/workspaces/${project.workspace_id}`}>
-            ← {locale === 'ar' ? 'مساحة العمل' : locale === 'fr' ? 'Espace de travail' : 'Back to Workspace'}
+          <Link 
+            className="text-indigo-600 hover:text-indigo-700 text-sm font-semibold flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-xl shadow-sm border border-indigo-100/50 transition-all hover:shadow-md hover:-translate-x-1" 
+            href={`/workspaces/${project.workspace_id}`}
+          >
+            <span>←</span> {locale === 'ar' ? 'مساحة العمل' : locale === 'fr' ? 'Espace de travail' : 'Back to Workspace'}
           </Link>
         )}
       </div>
 
-      {/* Project Header */}
+      {/* Project Header - Glassmorphism Style */}
       {project && (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-800">{project.name}</h1>
-          <p className="text-gray-500 text-sm mt-1">{project.description || '---'}</p>
+        <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-xl shadow-indigo-500/5 border border-white/80 mb-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+          <h1 className="text-4xl font-black text-slate-800 tracking-tight mb-2">{project.name}</h1>
+          <p className="text-slate-500 text-base max-w-2xl leading-relaxed">{project.description || 'لا توجد تفاصيل إضافية لهذا المشروع حالياً.'}</p>
         </div>
       )}
 
-      {/* Form لإضافة مهمة جديدة مع الأولوية والتاريخ */}
-      <form onSubmit={handleCreateTask} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
-        <h2 className="text-lg font-bold text-gray-800 mb-4">{t('projects.createTitle')}</h2>
+      {/* Form لإضافة مهمة جديدة بتصميم فني راقي */}
+      <form onSubmit={handleCreateTask} className="bg-white/90 backdrop-blur-xl p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100/80 mb-8">
+        <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+          <span className="w-2.5 h-6 bg-indigo-600 rounded-full"></span>
+          {t('projects.createTitle')}
+        </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">{t('projects.nameLabel')}</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{t('projects.nameLabel')}</label>
             <input
               type="text"
               value={taskTitle}
               onChange={(e) => setTaskTitle(e.target.value)}
-              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+              className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
               placeholder={t('projects.namePlaceholder')}
               required
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
               {locale === 'ar' ? 'تاريخ الاستحقاق' : locale === 'fr' ? "Date d'échéance" : 'Due Date'}
             </label>
             <input
               type="date"
               value={taskDueDate}
               onChange={(e) => setTaskDueDate(e.target.value)}
-              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+              className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
               {locale === 'ar' ? 'الأولوية' : locale === 'fr' ? 'Priorité' : 'Priority'}
             </label>
             <select
               value={taskPriority}
               onChange={(e) => setTaskPriority(e.target.value)}
-              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+              className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all cursor-pointer"
             >
-              <option value="low">{locale === 'ar' ? 'منخفضة' : locale === 'fr' ? 'Basse' : 'Low'}</option>
-              <option value="medium">{locale === 'ar' ? 'متوسطة' : locale === 'fr' ? 'Moyenne' : 'Medium'}</option>
-              <option value="high">{locale === 'ar' ? 'عالية' : locale === 'fr' ? 'Haute' : 'High'}</option>
+              <option value="low">🌱 {locale === 'ar' ? 'منخفضة' : locale === 'fr' ? 'Basse' : 'Low'}</option>
+              <option value="medium">⚡ {locale === 'ar' ? 'متوسطة' : locale === 'fr' ? 'Moyenne' : 'Medium'}</option>
+              <option value="high">🔥 {locale === 'ar' ? 'عالية' : locale === 'fr' ? 'Haute' : 'High'}</option>
             </select>
           </div>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-xs font-semibold text-gray-600 mb-1">{t('projects.descLabel')}</label>
+        <div className="mb-6">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{t('projects.descLabel')}</label>
           <textarea
             value={taskDesc}
             onChange={(e) => setTaskDesc(e.target.value)}
-            className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+            className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
             placeholder={t('projects.descPlaceholder')}
+            rows={2}
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-md shadow-blue-500/10"
+          className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold px-7 py-3.5 rounded-2xl text-sm transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:translate-y-0"
         >
-          {loading ? t('projects.loading') : t('projects.submitBtn')}
+          {loading ? t('projects.loading') : `✨ ${t('projects.submitBtn')}`}
         </button>
       </form>
 
-      {/* شريط البحث والفلترة */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={locale === 'ar' ? 'بحث عن مهمة...' : locale === 'fr' ? 'Rechercher une tâche...' : 'Search tasks...'}
-          className="flex-1 p-3 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
-        />
+      {/* شريط البحث والفلترة الاحترافي */}
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="relative flex-1">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">🔍</span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={locale === 'ar' ? 'ابحث عن مهمة بذكاء...' : locale === 'fr' ? 'Rechercher une tâche...' : 'Search tasks...'}
+            className="w-full pl-11 pr-4 py-3.5 bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 text-sm transition-all"
+          />
+        </div>
         <div className="flex gap-2 overflow-x-auto pb-2">
-          <button onClick={() => setStatusFilter('all')} className={`px-4 py-2 text-xs font-bold rounded-xl transition ${statusFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-white border text-gray-600'}`}>
-            {locale === 'ar' ? 'الكل' : locale === 'fr' ? 'Tous' : 'All'}
-          </button>
-          <button onClick={() => setStatusFilter('todo')} className={`px-4 py-2 text-xs font-bold rounded-xl transition ${statusFilter === 'todo' ? 'bg-slate-700 text-white' : 'bg-white border text-gray-600'}`}>
-            📌 To Do
-          </button>
-          <button onClick={() => setStatusFilter('in_progress')} className={`px-4 py-2 text-xs font-bold rounded-xl transition ${statusFilter === 'in_progress' ? 'bg-blue-600 text-white' : 'bg-white border text-gray-600'}`}>
-            ⏳ In Progress
-          </button>
-          <button onClick={() => setStatusFilter('done')} className={`px-4 py-2 text-xs font-bold rounded-xl transition ${statusFilter === 'done' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-600'}`}>
-            ✅ Done
-          </button>
+          {['all', 'todo', 'in_progress', 'done'].map((status) => (
+            <button
+              key={status}
+              onClick={() => setStatusFilter(status)}
+              className={`px-5 py-3 text-xs font-bold rounded-2xl transition-all shadow-sm ${
+                statusFilter === status
+                  ? 'bg-slate-900 text-white shadow-slate-900/20 scale-105'
+                  : 'bg-white/80 backdrop-blur-md border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {status === 'all' && (locale === 'ar' ? '🌌 الكل' : locale === 'fr' ? 'Tous' : 'All')}
+              {status === 'todo' && '📌 To Do'}
+              {status === 'in_progress' && '⏳ In Progress'}
+              {status === 'done' && '✅ Done'}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* لوحة Kanban Board */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* العمود 1: To Do */}
-        <div className="bg-slate-100/70 p-4 rounded-2xl border border-slate-200">
-          <h3 className="font-bold text-slate-700 mb-3 flex justify-between items-center text-sm px-1">
-            <span>📌 To Do</span>
-            <span className="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full">{todoTasks.length}</span>
-          </h3>
-          <div className="space-y-3">
-            {todoTasks.map((task) => (
-              <div key={task.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 relative group">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-gray-800 text-sm">{task.title}</h4>
-                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-300 hover:text-red-600 text-xs transition">🗑️</button>
-                </div>
-                <p className="text-gray-500 text-xs mb-3">{task.description || '---'}</p>
-                
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
-                  <div className="flex items-center gap-2">
-                    {getPriorityBadge(task.priority)}
-                    {task.due_date && <span className="text-[11px] text-gray-400">📅 {task.due_date}</span>}
+      {/* Kanban Board الفني */}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {columns.map((col) => (
+            <Droppable key={col.id} droppableId={col.id}>
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className={`p-5 rounded-3xl border transition-all duration-300 ${
+                    snapshot.isDraggingOver 
+                      ? 'bg-indigo-50/70 border-indigo-300 shadow-xl shadow-indigo-500/10 ring-4 ring-indigo-500/5' 
+                      : 'bg-white/60 backdrop-blur-xl border-slate-200/80 shadow-sm'
+                  }`}
+                >
+                  <div className={`p-3 rounded-2xl ${col.headerColor} mb-4 flex justify-between items-center font-extrabold text-sm shadow-sm`}>
+                    <span>{col.title}</span>
+                    <span className="bg-white text-slate-700 text-xs px-2.5 py-1 rounded-xl shadow-xs font-mono">{col.tasks.length}</span>
                   </div>
-                  <button onClick={() => handleUpdateStatus(task.id, 'in_progress')} className="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg hover:bg-blue-100 transition">
-                    Start →
-                  </button>
-                </div>
-              </div>
-            ))}
-            {todoTasks.length === 0 && <p className="text-gray-400 text-xs italic px-1">{t('projects.noTasks')}</p>}
-          </div>
-        </div>
 
-        {/* العمود 2: In Progress */}
-        <div className="bg-slate-100/70 p-4 rounded-2xl border border-slate-200">
-          <h3 className="font-bold text-blue-700 mb-3 flex justify-between items-center text-sm px-1">
-            <span>⏳ In Progress</span>
-            <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">{inProgressTasks.length}</span>
-          </h3>
-          <div className="space-y-3">
-            {inProgressTasks.map((task) => (
-              <div key={task.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 relative group">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-gray-800 text-sm">{task.title}</h4>
-                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-300 hover:text-red-600 text-xs transition">🗑️</button>
-                </div>
-                <p className="text-gray-500 text-xs mb-3">{task.description || '---'}</p>
-                
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
-                  <div className="flex items-center gap-2">
-                    {getPriorityBadge(task.priority)}
-                    {task.due_date && <span className="text-[11px] text-gray-400">📅 {task.due_date}</span>}
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => handleUpdateStatus(task.id, 'todo')} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg hover:bg-gray-200">←</button>
-                    <button onClick={() => handleUpdateStatus(task.id, 'done')} className="text-xs bg-emerald-50 text-emerald-600 font-semibold px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition">Done ✓</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {inProgressTasks.length === 0 && <p className="text-gray-400 text-xs italic px-1">{t('projects.noTasks')}</p>}
-          </div>
-        </div>
+                  <div className="space-y-3.5 min-h-[250px]">
+                    {col.tasks.map((task, index) => (
+                      <Draggable key={task.id} draggableId={String(task.id)} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={{ ...provided.draggableProps.style }}
+                            className={`bg-white p-5 rounded-2xl border transition-all duration-200 relative group cursor-grab active:cursor-grabbing ${
+                              snapshot.isDragging 
+                                ? 'shadow-2xl border-indigo-400 rotate-2 scale-105 z-50 bg-indigo-50/30' 
+                                : 'shadow-sm hover:shadow-xl hover:border-indigo-200 border-slate-100'
+                            } ${task.status === 'done' ? 'opacity-75 bg-slate-50/80' : ''}`}
+                          >
+                            <div className="flex justify-between items-start gap-3 mb-2.5">
+                              <h4 className={`font-bold text-sm leading-snug ${task.status === 'done' ? 'line-through text-slate-400' : 'text-slate-800'}`}>
+                                {task.title}
+                              </h4>
+                              <button
+                                onClick={() => handleDeleteTask(task.id)}
+                                className="text-slate-300 hover:text-rose-600 text-xs transition-colors p-1 rounded-lg hover:bg-rose-50"
+                                title="Delete task"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                            
+                            <p className="text-slate-500 text-xs mb-4 leading-relaxed">{task.description || '---'}</p>
 
-        {/* العمود 3: Done */}
-        <div className="bg-slate-100/70 p-4 rounded-2xl border border-slate-200">
-          <h3 className="font-bold text-emerald-700 mb-3 flex justify-between items-center text-sm px-1">
-            <span>✅ Done</span>
-            <span className="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full">{doneTasks.length}</span>
-          </h3>
-          <div className="space-y-3">
-            {doneTasks.map((task) => (
-              <div key={task.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 opacity-80 relative group">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-gray-400 line-through text-sm">{task.title}</h4>
-                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-300 hover:text-red-600 text-xs transition">🗑️</button>
-                </div>
-                <p className="text-gray-400 text-xs mb-3">{task.description || '---'}</p>
-                
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
-                  <div className="flex items-center gap-2">
-                    {getPriorityBadge(task.priority)}
-                    {task.due_date && <span className="text-[11px] text-gray-300">📅 {task.due_date}</span>}
+                            <div className="flex items-center justify-between pt-3 border-t border-slate-100/80">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {getPriorityBadge(task.priority)}
+                                {task.due_date && (
+                                  <span className="text-[11px] font-medium text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
+                                    📅 {task.due_date}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-[10px] text-slate-300 font-mono tracking-widest group-hover:text-indigo-400 transition-colors">⠿</span>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                    {col.tasks.length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-12 text-slate-400 border-2 border-dashed border-slate-200/60 rounded-2xl">
+                        <span className="text-2xl mb-1">📂</span>
+                        <p className="text-xs italic">{t('projects.noTasks')}</p>
+                      </div>
+                    )}
                   </div>
-                  <button onClick={() => handleUpdateStatus(task.id, 'in_progress')} className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-lg hover:bg-gray-200 transition">
-                    ← Reopen
-                  </button>
                 </div>
-              </div>
-            ))}
-            {doneTasks.length === 0 && <p className="text-gray-400 text-xs italic px-1">{t('projects.noTasks')}</p>}
-          </div>
+              )}
+            </Droppable>
+          ))}
         </div>
-
-      </div>
+      </DragDropContext>
     </main>
   )
 }
 
 export default function ProjectDetailsPage({ params }) {
   return (
-    <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-slate-500 font-medium">جاري تحميل التحفة الفنية... ✨</div>}>
       <ProjectContent params={params} />
     </Suspense>
   )
