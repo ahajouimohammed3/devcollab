@@ -12,3 +12,28 @@
     "noWorkspaces": "No workspaces found. Get started by creating one!"
   }
 }
+{
+  "workspaces": {
+    "title": "Workspaces",
+    "createTitle": "Create a New Workspace",
+    "nameLabel": "Workspace Name",
+    "namePlaceholder": "Ex: Development Team",
+    "descLabel": "Description",
+    "descPlaceholder": "Short description...",
+    "submitBtn": "Create Workspace",
+    "loading": "Creating...",
+    "currentList": "Current Workspaces",
+    "noWorkspaces": "No workspaces found. Get started by creating one!"
+  },
+  "projects": {
+    "title": "Projects",
+    "createTitle": "Create a New Project",
+    "nameLabel": "Project Name",
+    "namePlaceholder": "Ex: Mobile App",
+    "descLabel": "Description",
+    "descPlaceholder": "Project description...",
+    "submitBtn": "Create Project",
+    "loading": "Creating...",
+    "noProjects": "No projects in this workspace yet."
+  }
+}

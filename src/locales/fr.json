@@ -12,3 +12,28 @@
     "noWorkspaces": "Aucun espace de travail pour le moment. Créez-en un !"
   }
 }
+{
+  "workspaces": {
+    "title": "Espaces de travail",
+    "createTitle": "Créer un nouvel espace de travail",
+    "nameLabel": "Nom de l'espace",
+    "namePlaceholder": "Ex: Équipe de développement",
+    "descLabel": "Description",
+    "descPlaceholder": "Description courte...",
+    "submitBtn": "Créer l'espace",
+    "loading": "Création en cours...",
+    "currentList": "Espaces de travail actuels",
+    "noWorkspaces": "Aucun espace de travail pour le moment. Créez-en un !"
+  },
+  "projects": {
+    "title": "Projets",
+    "createTitle": "Créer un nouveau projet",
+    "nameLabel": "Nom du projet",
+    "namePlaceholder": "Ex: Application Mobile",
+    "descLabel": "Description",
+    "descPlaceholder": "Description du projet...",
+    "submitBtn": "Créer le projet",
+    "loading": "Création...",
+    "noProjects": "Aucun projet dans cet espace pour le moment."
+  }
+}
