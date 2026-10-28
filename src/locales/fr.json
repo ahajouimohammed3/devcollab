@@ -1,39 +1,24 @@
 {
   "workspaces": {
     "title": "Espaces de travail",
-    "createTitle": "Créer un nouvel espace de travail",
+    "createTitle": "Créer un nouvel espace",
     "nameLabel": "Nom de l'espace",
-    "namePlaceholder": "Ex: Équipe de développement",
+    "namePlaceholder": "ex: Équipe de développement",
     "descLabel": "Description",
-    "descPlaceholder": "Description courte...",
-    "submitBtn": "Créer l'espace",
-    "loading": "Création en cours...",
-    "currentList": "Espaces de travail actuels",
-    "noWorkspaces": "Aucun espace de travail pour le moment. Créez-en un !"
-  }
-}
-{
-  "workspaces": {
-    "title": "Espaces de travail",
-    "createTitle": "Créer un nouvel espace de travail",
-    "nameLabel": "Nom de l'espace",
-    "namePlaceholder": "Ex: Équipe de développement",
-    "descLabel": "Description",
-    "descPlaceholder": "Description courte...",
-    "submitBtn": "Créer l'espace",
-    "loading": "Création en cours...",
-    "currentList": "Espaces de travail actuels",
-    "noWorkspaces": "Aucun espace de travail pour le moment. Créez-en un !"
+    "descPlaceholder": "Description de l'espace...",
+    "submitBtn": "Ajouter un espace",
+    "loading": "Création...",
+    "noWorkspaces": "Aucun espace de travail trouvé."
   },
   "projects": {
     "title": "Projets",
     "createTitle": "Créer un nouveau projet",
     "nameLabel": "Nom du projet",
-    "namePlaceholder": "Ex: Application Mobile",
+    "namePlaceholder": "ex: Conception de l'interface",
     "descLabel": "Description",
     "descPlaceholder": "Description du projet...",
-    "submitBtn": "Créer le projet",
+    "submitBtn": "Ajouter un projet",
     "loading": "Création...",
-    "noProjects": "Aucun projet dans cet espace pour le moment."
+    "noProjects": "Aucun projet trouvé dans cet espace de travail."
   }
 }

@@ -2,38 +2,23 @@
   "workspaces": {
     "title": "مساحات العمل",
     "createTitle": "إنشاء مساحة عمل جديدة",
-    "nameLabel": "اسم المساحة",
+    "nameLabel": "اسم مساحة العمل",
     "namePlaceholder": "مثال: فريق التطوير",
     "descLabel": "الوصف",
-    "descPlaceholder": "وصف مختصر لمساحة العمل...",
-    "submitBtn": "إضافة مساحة العمل",
-    "loading": "جاري الإضافة...",
-    "currentList": "مساحات العمل الحالية",
-    "noWorkspaces": "لا توجد أي مساحة عمل حالياً. ابدأ بإنشاء واحدة!"
-  }
-}
-{
-  "workspaces": {
-    "title": "مساحات العمل",
-    "createTitle": "إنشاء مساحة عمل جديدة",
-    "nameLabel": "اسم المساحة",
-    "namePlaceholder": "مثال: فريق التطوير",
-    "descLabel": "الوصف",
-    "descPlaceholder": "وصف مختصر لمساحة العمل...",
-    "submitBtn": "إضافة مساحة العمل",
-    "loading": "جاري الإضافة...",
-    "currentList": "مساحات العمل الحالية",
-    "noWorkspaces": "لا توجد أي مساحة عمل حالياً. ابدأ بإنشاء واحدة!"
+    "descPlaceholder": "وصف مساحة العمل...",
+    "submitBtn": "إضافة مساحة عمل",
+    "loading": "جاري الإنشاء...",
+    "noWorkspaces": "لا توجد مساحات عمل حتى الآن."
   },
   "projects": {
     "title": "المشاريع",
     "createTitle": "إنشاء مشروع جديد",
     "nameLabel": "اسم المشروع",
-    "namePlaceholder": "مثال: تطبيق الجوال",
+    "namePlaceholder": "مثال: تصميم واجهة المستخدم",
     "descLabel": "الوصف",
     "descPlaceholder": "وصف المشروع...",
-    "submitBtn": "إضافة المشروع",
-    "loading": "جاري الإضافة...",
-    "noProjects": "لا توجد مشاريع في هذه المساحة حالياً."
+    "submitBtn": "إضافة مشروع",
+    "loading": "جاري الإنشاء...",
+    "noProjects": "لا توجد مشاريع في مساحة العمل هذه."
   }
 }
