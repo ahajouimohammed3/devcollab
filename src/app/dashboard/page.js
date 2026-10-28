@@ -20,17 +20,17 @@ export default function DashboardPage() {
   const fetchStats = async () => {
     setLoading(true)
 
-    // 1. جلب عدد مساحات العمل
+    // 1. Récupérer le nombre d'espaces de travail
     const { count: wsCount } = await supabase
       .from('workspaces')
       .select('*', { count: 'exact', head: true })
 
-    // 2. جلب عدد المشاريع
+    // 2. Récupérer le nombre de projets
     const { count: projCount } = await supabase
       .from('projects')
       .select('*', { count: 'exact', head: true })
 
-    // 3. جلب جميع المهام لحساب الحالات
+    // 3. Récupérer toutes les tâches pour calculer leur répartition par statut
     const { data: tasksData, error: tasksError } = await supabase
       .from('tasks')
       .select('status')
@@ -58,14 +58,14 @@ export default function DashboardPage() {
     fetchStats()
   }, [])
 
-  // حساب نسبة الإنجاز المئوية
+  // Calculer le taux d'achèvement en pourcentage
   const completionRate = stats.totalTasks > 0 
     ? Math.round((stats.doneTasks / stats.totalTasks) * 100) 
     : 0
 
   return (
     <main className="p-8 max-w-6xl mx-auto">
-      {/* Navigation & Top Bar */}
+      {/* Navigation et barre supérieure */}
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-4">
           <Link href="/workspaces" className="text-blue-600 hover:underline text-sm font-medium">
@@ -89,7 +89,7 @@ export default function DashboardPage() {
         </div>
       ) : (
         <div className="space-y-8">
-          {/* Overview Cards */}
+          {/* Cartes récapitulatives */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
               <span className="text-sm font-medium text-gray-500">
@@ -113,7 +113,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Task Status Breakdown */}
+          {/* Répartition des tâches par statut */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold text-gray-800 mb-6">
               {locale === 'ar' ? 'توزيع حالات المهام' : locale === 'fr' ? 'Répartition des tâches' : 'Tasks Status Breakdown'}
@@ -136,7 +136,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Progress Bar */}
+            {/* Barre de progression */}
             <div>
               <div className="flex justify-between text-sm font-medium text-gray-700 mb-2">
                 <span>{locale === 'ar' ? 'نسبة الإنجاز الكلية' : locale === 'fr' ? 'Taux d’achèvement' : 'Overall Completion Rate'}</span>

@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-// تحديد الصفحات العامة التي لا تتطلب تسجيل الدخول
+// Définir les pages publiques qui ne nécessitent pas de connexion
 const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/sign-up(.*)',
@@ -15,9 +15,9 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
+    // Ignorer les fichiers internes de Next.js et les fichiers statiques, sauf s'ils sont trouvés dans les paramètres de recherche
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|json|png|jpg|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
+    // Toujours exécuter le middleware pour les routes API
     '/(api|trpc)(.*)',
   ],
 }

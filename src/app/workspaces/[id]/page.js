@@ -22,7 +22,7 @@ function WorkspaceContent({ params }) {
   const fetchData = async () => {
     if (!user) return
 
-    // جلب بيانات مساحة العمل
+    // Récupérer les données de l'espace de travail
     const { data: wsData, error: wsError } = await supabase
       .from('workspaces')
       .select('*')
@@ -32,7 +32,7 @@ function WorkspaceContent({ params }) {
     if (wsError) console.error('Error fetching workspace:', wsError.message)
     else setWorkspace(wsData)
 
-    // جلب المشاريع الخاصة بهذا المستخدم ومساحة العمل هذه
+    // Récupérer les projets de cet utilisateur dans cet espace de travail
     const { data: projData, error: projError } = await supabase
       .from('projects')
       .select('*')
@@ -57,7 +57,7 @@ function WorkspaceContent({ params }) {
         name: projectName,
         description: projectDesc,
         workspace_id: workspaceId,
-        user_id: user.id // حفظ معرف المستخدم
+        user_id: user.id // Enregistrer l'identifiant de l'utilisateur
       }
     ])
 
@@ -86,14 +86,14 @@ function WorkspaceContent({ params }) {
 
   return (
     <main className="p-8 max-w-5xl mx-auto">
-      {/* Top Navigation */}
+      {/* Navigation supérieure */}
       <div className="mb-6">
         <Link className="text-blue-600 hover:underline text-sm font-semibold flex items-center gap-1" href="/workspaces">
           ← {locale === 'ar' ? 'الرجوع لمساحات العمل' : locale === 'fr' ? 'Retour aux espaces' : 'Back to Workspaces'}
         </Link>
       </div>
 
-      {/* Workspace Header */}
+      {/* En-tête de l'espace de travail */}
       {workspace && (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
           <h1 className="text-3xl font-extrabold text-gray-800">{workspace.name}</h1>
@@ -101,7 +101,7 @@ function WorkspaceContent({ params }) {
         </div>
       )}
 
-      {/* Form لإنشاء مشروع جديد */}
+      {/* Formulaire de création d'un nouveau projet */}
       <form onSubmit={handleCreateProject} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
         <h2 className="text-lg font-bold text-gray-800 mb-4">
           {locale === 'ar' ? 'إضافة مشروع جديد' : locale === 'fr' ? 'Créer un nouveau projet' : 'Create New Project'}
@@ -142,7 +142,7 @@ function WorkspaceContent({ params }) {
         </button>
       </form>
 
-      {/* قائمة المشاريع */}
+      {/* Liste des projets */}
       <h2 className="text-xl font-bold text-gray-800 mb-4">
         {locale === 'ar' ? 'المشاريع' : locale === 'fr' ? 'Projets' : 'Projects'}
       </h2>

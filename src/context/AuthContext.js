@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // التحقق من الجلسة الحالية عند تحميل التطبيق
+    // Vérifier la session actuelle lors du chargement de l'application
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       setUser(session?.user ?? null)
@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
 
     getSession()
 
-    // الاستماع للتغييرات في حالة المصادقة (تسجيل دخول / خروج)
+    // Écouter les changements d'état de l'authentification (connexion / déconnexion)
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
       setLoading(false)

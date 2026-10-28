@@ -10,7 +10,7 @@ const translations = { fr, ar, en }
 const LanguageContext = createContext()
 
 export function LanguageProvider({ children }) {
-  // الفرنسية هي الافتراضية
+  
   const [locale, setLocale] = useState('fr')
 
   useEffect(() => {

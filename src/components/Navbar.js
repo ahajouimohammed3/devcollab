@@ -10,30 +10,30 @@ export default function Navbar() {
   const translationContext = useTranslation()
   const [showNotifications, setShowNotifications] = useState(false)
 
-  // استخراج آمن لأي دالة محتملة لتغيير اللغة من السياق
+  // Récupérer de manière sécurisée toute fonction potentielle de changement de langue depuis le contexte
   const locale = translationContext?.locale || 'ar'
   const changeLangFunc = 
     translationContext?.setLocale || 
     translationContext?.setLanguage || 
     translationContext?.changeLanguage ||
     ((lang) => {
-      // محاولة تخزين اللغة محلياً إذا لم تكن الدالة موجودة في السياق
+      // Essayer de stocker la langue localement si la fonction n'existe pas dans le contexte
       localStorage.setItem('lang', lang)
       window.location.reload()
     })
 
-  // إشعارات توضيحية للعرض
+  // Notifications fictives à afficher
   const mockNotifications = [
-    { id: 1, text: 'تم إسناد مهمة جديدة لك في مشروع DevCollab', time: 'منذ 5 دقائق', unread: true },
-    { id: 2, text: 'أضاف أحد الأعضاء تعليقاً على مهمة التصميم', time: 'منذ ساعة', unread: false }
+    { id: 1, text: 'Une nouvelle tâche vous a été assignée dans le projet DevCollab', time: 'Il y a 5 minutes', unread: true },
+    { id: 2, text: 'Un membre a ajouté un commentaire sur une tâche de conception', time: 'Il y a une heure', unread: false }
   ]
 
   const unreadCount = mockNotifications.filter((n) => n.unread).length
 
   return (
     <header className="sticky top-0 z-40 bg-white/75 backdrop-blur-xl border-b border-slate-200/60 px-8 py-4 flex justify-between items-center transition-all shadow-sm">
-      
-      {/* Brand Logo */}
+
+      {/* Logo de la marque */}
       <Link href="/" className="flex items-center gap-3 group">
         <div className="w-11 h-11 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-all duration-300">
           D
@@ -43,10 +43,10 @@ export default function Navbar() {
         </span>
       </Link>
 
-      {/* Action Controls & Profile */}
+      {/* Contrôles d'action et profil */}
       <div className="flex items-center gap-6">
-        
-        {/* Language Selector */}
+
+        {/* Sélecteur de langue */}
         <div className="flex bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/50 text-xs font-bold gap-1">
           <button
             onClick={() => changeLangFunc('ar')}
@@ -74,7 +74,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Notification Bell Dropdown */}
+        {/* Menu déroulant des notifications */}
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
@@ -89,7 +89,7 @@ export default function Navbar() {
             )}
           </button>
 
-          {/* Popup Window */}
+          {/* Fenêtre contextuelle */}
           {showNotifications && (
             <div className="absolute right-0 mt-3 w-80 bg-white/95 backdrop-blur-2xl border border-slate-100 rounded-3xl shadow-2xl p-4 z-50 animate-fadeIn">
               <div className="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
@@ -118,12 +118,12 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* User Profile Info & Clerk Button */}
+        {/* Informations du profil utilisateur et bouton Clerk */}
         <div className="flex items-center gap-4 pl-4 border-l border-slate-200/60">
           {user && (
             <div className="hidden sm:flex flex-col text-right">
               <span className="text-xs font-bold text-slate-800 leading-tight">
-                {user.fullName || user.firstName || 'Dev Member'}
+                {user.fullName || user.firstName || 'Membre Dev'}
               </span>
               <span className="text-[10px] text-slate-400 font-mono">
                 {user.primaryEmailAddress?.emailAddress}

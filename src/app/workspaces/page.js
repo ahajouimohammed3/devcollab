@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 export default function WorkspacesPage() {
   const { t, locale } = useTranslation()
-  const { user } = useUser() // جلب بيانات المستخدم من Clerk
+  const { user } = useUser() 
   
   const [workspaces, setWorkspaces] = useState([])
   const [name, setName] = useState('')
@@ -21,7 +21,7 @@ export default function WorkspacesPage() {
     const { data, error } = await supabase
       .from('workspaces')
       .select('*')
-      .eq('user_id', user.id) // جلب مساحات العمل الخاصة بهذا المستخدم فقط
+      .eq('user_id', user.id) 
 
     if (error) console.error('Error fetching workspaces:', error.message)
     else setWorkspaces(data || [])
@@ -42,7 +42,7 @@ export default function WorkspacesPage() {
       {
         name,
         description,
-        user_id: user.id // حفظ معرف المستخدم مع مساحة العمل
+        user_id: user.id 
       }
     ])
 
@@ -83,7 +83,7 @@ export default function WorkspacesPage() {
         </div>
       </div>
 
-      {/* Form لإنشاء مساحة عمل جديدة */}
+      {}
       <form onSubmit={handleCreateWorkspace} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
         <h2 className="text-lg font-bold text-gray-800 mb-4">
           {locale === 'ar' ? 'إنشاء مساحة عمل جديدة' : locale === 'fr' ? 'Créer un nouvel espace' : 'Create New Workspace'}
@@ -124,7 +124,7 @@ export default function WorkspacesPage() {
         </button>
       </form>
 
-      {/* قائمة مساحات العمل */}
+      {}
       <h2 className="text-xl font-bold text-gray-800 mb-4">
         {locale === 'ar' ? 'مساحات العمل الخاصة بك' : locale === 'fr' ? 'Vos espaces' : 'Your Workspaces'}
       </h2>
