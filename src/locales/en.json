@@ -3,33 +3,19 @@
     "title": "Workspaces",
     "createTitle": "Create a New Workspace",
     "nameLabel": "Workspace Name",
-    "namePlaceholder": "Ex: Development Team",
+    "namePlaceholder": "e.g., Development Team",
     "descLabel": "Description",
-    "descPlaceholder": "Short description...",
+    "descPlaceholder": "Workspace description...",
     "submitBtn": "Create Workspace",
     "loading": "Creating...",
     "currentList": "Current Workspaces",
-    "noWorkspaces": "No workspaces found. Get started by creating one!"
-  }
-}
-{
-  "workspaces": {
-    "title": "Workspaces",
-    "createTitle": "Create a New Workspace",
-    "nameLabel": "Workspace Name",
-    "namePlaceholder": "Ex: Development Team",
-    "descLabel": "Description",
-    "descPlaceholder": "Short description...",
-    "submitBtn": "Create Workspace",
-    "loading": "Creating...",
-    "currentList": "Current Workspaces",
-    "noWorkspaces": "No workspaces found. Get started by creating one!"
+    "noWorkspaces": "No workspaces found."
   },
   "projects": {
     "title": "Projects",
     "createTitle": "Create a New Project",
     "nameLabel": "Project Name",
-    "namePlaceholder": "Ex: Mobile App",
+    "namePlaceholder": "e.g., Mobile App",
     "descLabel": "Description",
     "descPlaceholder": "Project description...",
     "submitBtn": "Create Project",

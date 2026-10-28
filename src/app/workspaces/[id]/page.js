@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect, use, Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from '@/context/LanguageContext'
 import Link from 'next/link'
 
-export default function WorkspaceDetailsPage({ params }) {
+function WorkspaceContent({ params }) {
   const resolvedParams = use(params)
   const workspaceId = resolvedParams.id
 
@@ -16,9 +16,7 @@ export default function WorkspaceDetailsPage({ params }) {
   const [projectDesc, setProjectDesc] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // جلب تفاصيل الـ Workspace والمشاريع التابعة له
   const fetchData = async () => {
-    // جلب Workspace
     const { data: wsData, error: wsError } = await supabase
       .from('workspaces')
       .select('*')
@@ -28,7 +26,6 @@ export default function WorkspaceDetailsPage({ params }) {
     if (wsError) console.error('Error fetching workspace:', wsError)
     else setWorkspace(wsData)
 
-    // جلب Projects
     const { data: projData, error: projError } = await supabase
       .from('projects')
       .select('*')
@@ -42,7 +39,6 @@ export default function WorkspaceDetailsPage({ params }) {
     if (workspaceId) fetchData()
   }, [workspaceId])
 
-  // إضافة مشروع جديد
   const handleCreateProject = async (e) => {
     e.preventDefault()
     if (!projectName.trim()) return
@@ -135,19 +131,31 @@ export default function WorkspaceDetailsPage({ params }) {
         </button>
       </form>
 
-      {/* قائمة المشاريع */}
+      {/* قائمة المشاريع مع الروابط لصفحة المهام */}
       <h2 className="text-2xl font-semibold mb-4">{t('projects.title')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {projects.map((project) => (
-          <div key={project.id} className="bg-white p-5 rounded-lg shadow border border-gray-100 hover:border-blue-300 transition">
+          <Link 
+            key={project.id} 
+            href={`/projects/${project.id}`}
+            className="block bg-white p-5 rounded-lg shadow border border-gray-100 hover:border-blue-500 hover:shadow-md transition cursor-pointer"
+          >
             <h3 className="text-xl font-bold text-gray-800">{project.name}</h3>
             <p className="text-gray-600 mt-2 text-sm">{project.description || '---'}</p>
-          </div>
+          </Link>
         ))}
         {projects.length === 0 && (
           <p className="text-gray-500">{t('projects.noProjects')}</p>
         )}
       </div>
     </main>
+  )
+}
+
+export default function WorkspaceDetailsPage({ params }) {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Chargement...</div>}>
+      <WorkspaceContent params={params} />
+    </Suspense>
   )
 }

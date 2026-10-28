@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { useTranslation } from '@/context/LanguageContext'
 import Link from 'next/link'
 
+
 export default function WorkspacesPage() {
   const { t, locale, changeLanguage } = useTranslation()
   const [workspaces, setWorkspaces] = useState([])
