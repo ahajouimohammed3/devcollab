@@ -1,103 +1,110 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/context/AuthContext'
+import { useSignIn } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function LoginPage() {
-  const [isSignUp, setIsSignUp] = useState(false)
+  // 🛡️ Utilisation correcte du hook useSignIn de Clerk
+  const { isLoaded, signIn, setActive } = useSignIn()
+  
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [errorMsg, setErrorMsg] = useState('')
   const [loading, setLoading] = useState(false)
-
-  const { signIn, signUp } = useAuth()
+  const [error, setError] = useState('')
+  
   const router = useRouter()
 
+  // Gestion de la soumission du formulaire de connexion
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setErrorMsg('')
+    if (!isLoaded) return
+
     setLoading(true)
+    setError('')
 
     try {
-      if (isSignUp) {
-        const { error } = await signUp(email, password)
-        if (error) throw error
-        alert('تم إنشاء الحساب بنجاح! تحقق من بريدك الإلكتروني إن تطلب الأمر.')
+      // Tentative de connexion avec Clerk
+      const result = await signIn.create({
+        identifier: email,
+        password,
+      })
+
+      if (result.status === 'complete') {
+        // Activation de la session utilisateur
+        await setActive({ session: result.createdSessionId })
+        router.push('/')
       } else {
-        const { error } = await signIn(email, password)
-        if (error) throw error
-        router.push('/workspaces')
+        console.log('Statut de connexion:', result)
       }
     } catch (err) {
-      setErrorMsg(err.message)
+      console.error('Erreur de connexion:', err)
+      setError(err.errors?.[0]?.message || 'Une erreur est survenue lors de la connexion.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-        {/* Logo & Header */}
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-indigo-50/20 to-slate-100 p-4 font-sans">
+      <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-xl shadow-indigo-500/5 border border-white/80 max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-blue-600 tracking-tight">DevCollab</h1>
-          <p className="text-gray-500 text-sm mt-2">
-            {isSignUp ? 'أنشئ حسابك الجديد للبدء' : 'مرحباً بك مجدداً! سجل دخولك للمتابعة'}
-          </p>
+          <h1 className="text-3xl font-black text-slate-800 mb-2">Connexion</h1>
+          <p className="text-sm text-slate-500">Accédez à votre espace de travail DevCollab</p>
         </div>
 
-        {errorMsg && (
-          <div className="mb-4 p-3 bg-red-50 text-red-600 text-xs rounded-lg border border-red-100">
-            {errorMsg}
+        {error && (
+          <div className="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-600 text-xs rounded-2xl font-semibold">
+            ⚠️ {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">البريد الإلكتروني</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+              Adresse Email
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/50 transition-all"
+              placeholder="nom@exemple.com"
               required
-              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
-              placeholder="name@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">كلمة المرور</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+              Mot de passe
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+              className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/50 transition-all"
               placeholder="••••••••"
+              required
             />
           </div>
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-md hover:shadow-lg disabled:opacity-50"
+            disabled={loading || !isLoaded}
+            className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold p-3.5 rounded-2xl text-sm transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 mt-2"
           >
-            {loading ? 'جاري المعالجة...' : isSignUp ? 'إنشاء حساب جديد' : 'تسجيل الدخول'}
+            {loading ? 'Connexion en cours...' : 'Se connecter'}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-xs text-gray-500">
-          {isSignUp ? 'لديك حساب بالفعل؟ ' : 'ليس لديك حساب؟ '}
-          <button
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="text-blue-600 font-bold hover:underline"
-          >
-            {isSignUp ? 'تسجيل الدخول' : 'إنشاء حساب'}
-          </button>
+        <div className="mt-6 text-center text-xs text-slate-500">
+          Vous n'avez pas de compte ?{' '}
+          <Link href="/signup" className="text-indigo-600 font-bold hover:underline">
+            S'inscrire
+          </Link>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
