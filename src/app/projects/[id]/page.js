@@ -14,8 +14,9 @@ function ProjectContent({ params }) {
   const [tasks, setTasks] = useState([])
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDesc, setTaskDesc] = useState('')
+  const [taskDueDate, setTaskDueDate] = useState('') // حقل تاريخ الاستحقاق الجديد
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all') // حالة الفلتر الجديدة
+  const [statusFilter, setStatusFilter] = useState('all')
   const [loading, setLoading] = useState(false)
 
   const fetchData = async () => {
@@ -50,6 +51,7 @@ function ProjectContent({ params }) {
       {
         title: taskTitle,
         description: taskDesc,
+        due_date: taskDueDate || null, // حفظ تاريخ الاستحقاق
         status: 'todo',
         project_id: projectId
       }
@@ -60,6 +62,7 @@ function ProjectContent({ params }) {
     } else {
       setTaskTitle('')
       setTaskDesc('')
+      setTaskDueDate('')
       fetchData()
     }
     setLoading(false)
@@ -91,7 +94,6 @@ function ProjectContent({ params }) {
     }
   }
 
-  // تصفية المهام بناءً على شريط البحث والفلتر
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = 
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -130,20 +132,35 @@ function ProjectContent({ params }) {
         </div>
       )}
 
-      {/* Form لإضافة مهمة جديدة */}
+      {/* Form لإضافة مهمة جديدة مع تاريخ الاستحقاق */}
       <form onSubmit={handleCreateTask} className="bg-white p-6 rounded-lg shadow-md mb-8 border">
         <h2 className="text-xl font-semibold mb-4">{t('projects.createTitle')}</h2>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">{t('projects.nameLabel')}</label>
-          <input
-            type="text"
-            value={taskTitle}
-            onChange={(e) => setTaskTitle(e.target.value)}
-            className="w-full p-2 border rounded-md"
-            placeholder={t('projects.namePlaceholder')}
-            required
-          />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">{t('projects.nameLabel')}</label>
+            <input
+              type="text"
+              value={taskTitle}
+              onChange={(e) => setTaskTitle(e.target.value)}
+              className="w-full p-2 border rounded-md"
+              placeholder={t('projects.namePlaceholder')}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              {locale === 'ar' ? 'تاريخ الاستحقاق' : locale === 'fr' ? "Date d'échéance" : 'Due Date'}
+            </label>
+            <input
+              type="date"
+              value={taskDueDate}
+              onChange={(e) => setTaskDueDate(e.target.value)}
+              className="w-full p-2 border rounded-md"
+            />
+          </div>
         </div>
+
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">{t('projects.descLabel')}</label>
           <textarea
@@ -172,28 +189,16 @@ function ProjectContent({ params }) {
           className="flex-1 p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
         />
         <div className="flex gap-2 overflow-x-auto pb-2">
-          <button 
-            onClick={() => setStatusFilter('all')} 
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-white border text-gray-600 hover:bg-gray-100'}`}
-          >
+          <button onClick={() => setStatusFilter('all')} className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-white border text-gray-600'}`}>
             {locale === 'ar' ? 'الكل' : locale === 'fr' ? 'Tous' : 'All'}
           </button>
-          <button 
-            onClick={() => setStatusFilter('todo')} 
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'todo' ? 'bg-gray-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-100'}`}
-          >
+          <button onClick={() => setStatusFilter('todo')} className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'todo' ? 'bg-gray-600 text-white' : 'bg-white border text-gray-600'}`}>
             📌 {locale === 'ar' ? 'قيد الانتظار' : locale === 'fr' ? 'À faire' : 'To Do'}
           </button>
-          <button 
-            onClick={() => setStatusFilter('in_progress')} 
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'in_progress' ? 'bg-blue-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-100'}`}
-          >
+          <button onClick={() => setStatusFilter('in_progress')} className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'in_progress' ? 'bg-blue-600 text-white' : 'bg-white border text-gray-600'}`}>
             ⏳ {locale === 'ar' ? 'قيد الإنجاز' : locale === 'fr' ? 'En cours' : 'In Progress'}
           </button>
-          <button 
-            onClick={() => setStatusFilter('done')} 
-            className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'done' ? 'bg-green-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-100'}`}
-          >
+          <button onClick={() => setStatusFilter('done')} className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'done' ? 'bg-green-600 text-white' : 'bg-white border text-gray-600'}`}>
             ✅ {locale === 'ar' ? 'مكتملة' : locale === 'fr' ? 'Terminé' : 'Done'}
           </button>
         </div>
@@ -214,20 +219,16 @@ function ProjectContent({ params }) {
               <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100 relative group">
                 <div className="flex justify-between items-start">
                   <h4 className="font-bold text-gray-800">{task.title}</h4>
-                  <button 
-                    onClick={() => handleDeleteTask(task.id)}
-                    className="text-gray-400 hover:text-red-600 text-xs transition"
-                    title="Delete Task"
-                  >
-                    🗑️
-                  </button>
+                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-400 hover:text-red-600 text-xs transition">🗑️</button>
                 </div>
                 <p className="text-gray-600 text-xs mt-1">{task.description || '---'}</p>
+                {task.due_date && (
+                  <div className="mt-2 text-[11px] text-orange-600 font-medium flex items-center gap-1">
+                    📅 {task.due_date}
+                  </div>
+                )}
                 <div className="mt-3 flex justify-end gap-1">
-                  <button 
-                    onClick={() => handleUpdateStatus(task.id, 'in_progress')}
-                    className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100"
-                  >
+                  <button onClick={() => handleUpdateStatus(task.id, 'in_progress')} className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100">
                     Start →
                   </button>
                 </div>
@@ -248,26 +249,19 @@ function ProjectContent({ params }) {
               <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100 relative group">
                 <div className="flex justify-between items-start">
                   <h4 className="font-bold text-gray-800">{task.title}</h4>
-                  <button 
-                    onClick={() => handleDeleteTask(task.id)}
-                    className="text-gray-400 hover:text-red-600 text-xs transition"
-                    title="Delete Task"
-                  >
-                    🗑️
-                  </button>
+                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-400 hover:text-red-600 text-xs transition">🗑️</button>
                 </div>
                 <p className="text-gray-600 text-xs mt-1">{task.description || '---'}</p>
+                {task.due_date && (
+                  <div className="mt-2 text-[11px] text-orange-600 font-medium flex items-center gap-1">
+                    📅 {task.due_date}
+                  </div>
+                )}
                 <div className="mt-3 flex justify-between gap-1">
-                  <button 
-                    onClick={() => handleUpdateStatus(task.id, 'todo')}
-                    className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200"
-                  >
+                  <button onClick={() => handleUpdateStatus(task.id, 'todo')} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
                     ← Back
                   </button>
-                  <button 
-                    onClick={() => handleUpdateStatus(task.id, 'done')}
-                    className="text-xs bg-green-50 text-green-600 px-2 py-1 rounded hover:bg-green-100"
-                  >
+                  <button onClick={() => handleUpdateStatus(task.id, 'done')} className="text-xs bg-green-50 text-green-600 px-2 py-1 rounded hover:bg-green-100">
                     Done ✓
                   </button>
                 </div>
@@ -288,20 +282,16 @@ function ProjectContent({ params }) {
               <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100 opacity-80 relative group">
                 <div className="flex justify-between items-start">
                   <h4 className="font-bold text-gray-800 line-through">{task.title}</h4>
-                  <button 
-                    onClick={() => handleDeleteTask(task.id)}
-                    className="text-gray-400 hover:text-red-600 text-xs transition"
-                    title="Delete Task"
-                  >
-                    🗑️
-                  </button>
+                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-400 hover:text-red-600 text-xs transition">🗑️</button>
                 </div>
                 <p className="text-gray-600 text-xs mt-1">{task.description || '---'}</p>
+                {task.due_date && (
+                  <div className="mt-2 text-[11px] text-gray-400 font-medium flex items-center gap-1">
+                    📅 {task.due_date}
+                  </div>
+                )}
                 <div className="mt-3 flex justify-start gap-1">
-                  <button 
-                    onClick={() => handleUpdateStatus(task.id, 'in_progress')}
-                    className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200"
-                  >
+                  <button onClick={() => handleUpdateStatus(task.id, 'in_progress')} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
                     ← Reopen
                   </button>
                 </div>
