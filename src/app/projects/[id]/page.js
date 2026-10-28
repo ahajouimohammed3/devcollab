@@ -14,7 +14,8 @@ function ProjectContent({ params }) {
   const [tasks, setTasks] = useState([])
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDesc, setTaskDesc] = useState('')
-  const [taskDueDate, setTaskDueDate] = useState('') // حقل تاريخ الاستحقاق الجديد
+  const [taskDueDate, setTaskDueDate] = useState('')
+  const [taskPriority, setTaskPriority] = useState('medium') // حقل الأولوية الجديد
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [loading, setLoading] = useState(false)
@@ -51,18 +52,20 @@ function ProjectContent({ params }) {
       {
         title: taskTitle,
         description: taskDesc,
-        due_date: taskDueDate || null, // حفظ تاريخ الاستحقاق
+        due_date: taskDueDate || null,
+        priority: taskPriority, // حفظ الأولوية
         status: 'todo',
         project_id: projectId
       }
     ])
 
     if (error) {
-      console.error('Error creating task details:', error.message)
+      console.error('Error creating task:', error.message)
     } else {
       setTaskTitle('')
       setTaskDesc('')
       setTaskDueDate('')
+      setTaskPriority('medium')
       fetchData()
     }
     setLoading(false)
@@ -74,11 +77,8 @@ function ProjectContent({ params }) {
       .update({ status: newStatus })
       .eq('id', taskId)
 
-    if (error) {
-      console.error('Error updating task status:', error.message)
-    } else {
-      fetchData()
-    }
+    if (error) console.error('Error updating status:', error.message)
+    else fetchData()
   }
 
   const handleDeleteTask = async (taskId) => {
@@ -87,10 +87,20 @@ function ProjectContent({ params }) {
       .delete()
       .eq('id', taskId)
 
-    if (error) {
-      console.error('Error deleting task:', error.message)
-    } else {
-      fetchData()
+    if (error) console.error('Error deleting task:', error.message)
+    else fetchData()
+  }
+
+  const getPriorityBadge = (priority) => {
+    switch (priority) {
+      case 'high':
+        return <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">High</span>
+      case 'medium':
+        return <span className="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-bold">Medium</span>
+      case 'low':
+        return <span className="text-[10px] bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full font-bold">Low</span>
+      default:
+        return null
     }
   }
 
@@ -110,194 +120,200 @@ function ProjectContent({ params }) {
 
   return (
     <main className="p-8 max-w-6xl mx-auto">
-      {/* Top Bar */}
+      {/* Top Navigation */}
       <div className="flex justify-between items-center mb-6">
         {project && (
-          <Link className="text-blue-600 hover:underline text-sm font-medium" href={`/workspaces/${project.workspace_id}`}>
+          <Link className="text-blue-600 hover:underline text-sm font-semibold flex items-center gap-1" href={`/workspaces/${project.workspace_id}`}>
             ← {locale === 'ar' ? 'مساحة العمل' : locale === 'fr' ? 'Espace de travail' : 'Back to Workspace'}
           </Link>
         )}
-        <div className="flex gap-2">
-          <button onClick={() => changeLanguage('fr')} className={`px-3 py-1 text-xs rounded ${locale === 'fr' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>Français</button>
-          <button onClick={() => changeLanguage('ar')} className={`px-3 py-1 text-xs rounded ${locale === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>العربية</button>
-          <button onClick={() => changeLanguage('en')} className={`px-3 py-1 text-xs rounded ${locale === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>English</button>
-        </div>
       </div>
 
       {/* Project Header */}
       {project && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">{project.name}</h1>
-          <p className="text-gray-600 mt-2">{project.description || '---'}</p>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+          <h1 className="text-3xl font-extrabold text-gray-800">{project.name}</h1>
+          <p className="text-gray-500 text-sm mt-1">{project.description || '---'}</p>
         </div>
       )}
 
-      {/* Form لإضافة مهمة جديدة مع تاريخ الاستحقاق */}
-      <form onSubmit={handleCreateTask} className="bg-white p-6 rounded-lg shadow-md mb-8 border">
-        <h2 className="text-xl font-semibold mb-4">{t('projects.createTitle')}</h2>
+      {/* Form لإضافة مهمة جديدة مع الأولوية والتاريخ */}
+      <form onSubmit={handleCreateTask} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+        <h2 className="text-lg font-bold text-gray-800 mb-4">{t('projects.createTitle')}</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium mb-1">{t('projects.nameLabel')}</label>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">{t('projects.nameLabel')}</label>
             <input
               type="text"
               value={taskTitle}
               onChange={(e) => setTaskTitle(e.target.value)}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
               placeholder={t('projects.namePlaceholder')}
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
               {locale === 'ar' ? 'تاريخ الاستحقاق' : locale === 'fr' ? "Date d'échéance" : 'Due Date'}
             </label>
             <input
               type="date"
               value={taskDueDate}
               onChange={(e) => setTaskDueDate(e.target.value)}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
             />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              {locale === 'ar' ? 'الأولوية' : locale === 'fr' ? 'Priorité' : 'Priority'}
+            </label>
+            <select
+              value={taskPriority}
+              onChange={(e) => setTaskPriority(e.target.value)}
+              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+            >
+              <option value="low">{locale === 'ar' ? 'منخفضة' : locale === 'fr' ? 'Basse' : 'Low'}</option>
+              <option value="medium">{locale === 'ar' ? 'متوسطة' : locale === 'fr' ? 'Moyenne' : 'Medium'}</option>
+              <option value="high">{locale === 'ar' ? 'عالية' : locale === 'fr' ? 'Haute' : 'High'}</option>
+            </select>
           </div>
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">{t('projects.descLabel')}</label>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">{t('projects.descLabel')}</label>
           <textarea
             value={taskDesc}
             onChange={(e) => setTaskDesc(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
             placeholder={t('projects.descPlaceholder')}
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-md shadow-blue-500/10"
         >
           {loading ? t('projects.loading') : t('projects.submitBtn')}
         </button>
       </form>
 
-      {/* شريط البحث وأزرار الفلترة */}
+      {/* شريط البحث والفلترة */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={locale === 'ar' ? 'بحث عن مهمة...' : locale === 'fr' ? 'Rechercher une tâche...' : 'Search tasks...'}
-          className="flex-1 p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          className="flex-1 p-3 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
         />
         <div className="flex gap-2 overflow-x-auto pb-2">
-          <button onClick={() => setStatusFilter('all')} className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-white border text-gray-600'}`}>
+          <button onClick={() => setStatusFilter('all')} className={`px-4 py-2 text-xs font-bold rounded-xl transition ${statusFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-white border text-gray-600'}`}>
             {locale === 'ar' ? 'الكل' : locale === 'fr' ? 'Tous' : 'All'}
           </button>
-          <button onClick={() => setStatusFilter('todo')} className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'todo' ? 'bg-gray-600 text-white' : 'bg-white border text-gray-600'}`}>
-            📌 {locale === 'ar' ? 'قيد الانتظار' : locale === 'fr' ? 'À faire' : 'To Do'}
+          <button onClick={() => setStatusFilter('todo')} className={`px-4 py-2 text-xs font-bold rounded-xl transition ${statusFilter === 'todo' ? 'bg-slate-700 text-white' : 'bg-white border text-gray-600'}`}>
+            📌 To Do
           </button>
-          <button onClick={() => setStatusFilter('in_progress')} className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'in_progress' ? 'bg-blue-600 text-white' : 'bg-white border text-gray-600'}`}>
-            ⏳ {locale === 'ar' ? 'قيد الإنجاز' : locale === 'fr' ? 'En cours' : 'In Progress'}
+          <button onClick={() => setStatusFilter('in_progress')} className={`px-4 py-2 text-xs font-bold rounded-xl transition ${statusFilter === 'in_progress' ? 'bg-blue-600 text-white' : 'bg-white border text-gray-600'}`}>
+            ⏳ In Progress
           </button>
-          <button onClick={() => setStatusFilter('done')} className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'done' ? 'bg-green-600 text-white' : 'bg-white border text-gray-600'}`}>
-            ✅ {locale === 'ar' ? 'مكتملة' : locale === 'fr' ? 'Terminé' : 'Done'}
+          <button onClick={() => setStatusFilter('done')} className={`px-4 py-2 text-xs font-bold rounded-xl transition ${statusFilter === 'done' ? 'bg-emerald-600 text-white' : 'bg-white border text-gray-600'}`}>
+            ✅ Done
           </button>
         </div>
       </div>
 
-      {/* لوحة التحكم Kanban Board */}
-      <h2 className="text-2xl font-semibold mb-4">{t('projects.title')}</h2>
+      {/* لوحة Kanban Board */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* العمود 1: To Do */}
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <h3 className="font-bold text-gray-700 mb-3 flex justify-between items-center">
-            <span>📌 {locale === 'ar' ? 'قيد الانتظار' : locale === 'fr' ? 'À faire' : 'To Do'}</span>
-            <span className="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-full">{todoTasks.length}</span>
+        <div className="bg-slate-100/70 p-4 rounded-2xl border border-slate-200">
+          <h3 className="font-bold text-slate-700 mb-3 flex justify-between items-center text-sm px-1">
+            <span>📌 To Do</span>
+            <span className="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full">{todoTasks.length}</span>
           </h3>
           <div className="space-y-3">
             {todoTasks.map((task) => (
-              <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100 relative group">
-                <div className="flex justify-between items-start">
-                  <h4 className="font-bold text-gray-800">{task.title}</h4>
-                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-400 hover:text-red-600 text-xs transition">🗑️</button>
+              <div key={task.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 relative group">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-bold text-gray-800 text-sm">{task.title}</h4>
+                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-300 hover:text-red-600 text-xs transition">🗑️</button>
                 </div>
-                <p className="text-gray-600 text-xs mt-1">{task.description || '---'}</p>
-                {task.due_date && (
-                  <div className="mt-2 text-[11px] text-orange-600 font-medium flex items-center gap-1">
-                    📅 {task.due_date}
+                <p className="text-gray-500 text-xs mb-3">{task.description || '---'}</p>
+                
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
+                  <div className="flex items-center gap-2">
+                    {getPriorityBadge(task.priority)}
+                    {task.due_date && <span className="text-[11px] text-gray-400">📅 {task.due_date}</span>}
                   </div>
-                )}
-                <div className="mt-3 flex justify-end gap-1">
-                  <button onClick={() => handleUpdateStatus(task.id, 'in_progress')} className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100">
+                  <button onClick={() => handleUpdateStatus(task.id, 'in_progress')} className="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg hover:bg-blue-100 transition">
                     Start →
                   </button>
                 </div>
               </div>
             ))}
-            {todoTasks.length === 0 && <p className="text-gray-400 text-xs italic">{t('projects.noTasks')}</p>}
+            {todoTasks.length === 0 && <p className="text-gray-400 text-xs italic px-1">{t('projects.noTasks')}</p>}
           </div>
         </div>
 
         {/* العمود 2: In Progress */}
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <h3 className="font-bold text-blue-700 mb-3 flex justify-between items-center">
-            <span>⏳ {locale === 'ar' ? 'قيد الإنجاز' : locale === 'fr' ? 'En cours' : 'In Progress'}</span>
+        <div className="bg-slate-100/70 p-4 rounded-2xl border border-slate-200">
+          <h3 className="font-bold text-blue-700 mb-3 flex justify-between items-center text-sm px-1">
+            <span>⏳ In Progress</span>
             <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">{inProgressTasks.length}</span>
           </h3>
           <div className="space-y-3">
             {inProgressTasks.map((task) => (
-              <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100 relative group">
-                <div className="flex justify-between items-start">
-                  <h4 className="font-bold text-gray-800">{task.title}</h4>
-                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-400 hover:text-red-600 text-xs transition">🗑️</button>
+              <div key={task.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 relative group">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-bold text-gray-800 text-sm">{task.title}</h4>
+                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-300 hover:text-red-600 text-xs transition">🗑️</button>
                 </div>
-                <p className="text-gray-600 text-xs mt-1">{task.description || '---'}</p>
-                {task.due_date && (
-                  <div className="mt-2 text-[11px] text-orange-600 font-medium flex items-center gap-1">
-                    📅 {task.due_date}
+                <p className="text-gray-500 text-xs mb-3">{task.description || '---'}</p>
+                
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
+                  <div className="flex items-center gap-2">
+                    {getPriorityBadge(task.priority)}
+                    {task.due_date && <span className="text-[11px] text-gray-400">📅 {task.due_date}</span>}
                   </div>
-                )}
-                <div className="mt-3 flex justify-between gap-1">
-                  <button onClick={() => handleUpdateStatus(task.id, 'todo')} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
-                    ← Back
-                  </button>
-                  <button onClick={() => handleUpdateStatus(task.id, 'done')} className="text-xs bg-green-50 text-green-600 px-2 py-1 rounded hover:bg-green-100">
-                    Done ✓
-                  </button>
+                  <div className="flex gap-1">
+                    <button onClick={() => handleUpdateStatus(task.id, 'todo')} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg hover:bg-gray-200">←</button>
+                    <button onClick={() => handleUpdateStatus(task.id, 'done')} className="text-xs bg-emerald-50 text-emerald-600 font-semibold px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition">Done ✓</button>
+                  </div>
                 </div>
               </div>
             ))}
-            {inProgressTasks.length === 0 && <p className="text-gray-400 text-xs italic">{t('projects.noTasks')}</p>}
+            {inProgressTasks.length === 0 && <p className="text-gray-400 text-xs italic px-1">{t('projects.noTasks')}</p>}
           </div>
         </div>
 
         {/* العمود 3: Done */}
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <h3 className="font-bold text-green-700 mb-3 flex justify-between items-center">
-            <span>✅ {locale === 'ar' ? 'مكتملة' : locale === 'fr' ? 'Terminé' : 'Done'}</span>
-            <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">{doneTasks.length}</span>
+        <div className="bg-slate-100/70 p-4 rounded-2xl border border-slate-200">
+          <h3 className="font-bold text-emerald-700 mb-3 flex justify-between items-center text-sm px-1">
+            <span>✅ Done</span>
+            <span className="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full">{doneTasks.length}</span>
           </h3>
           <div className="space-y-3">
             {doneTasks.map((task) => (
-              <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100 opacity-80 relative group">
-                <div className="flex justify-between items-start">
-                  <h4 className="font-bold text-gray-800 line-through">{task.title}</h4>
-                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-400 hover:text-red-600 text-xs transition">🗑️</button>
+              <div key={task.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 opacity-80 relative group">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-bold text-gray-400 line-through text-sm">{task.title}</h4>
+                  <button onClick={() => handleDeleteTask(task.id)} className="text-gray-300 hover:text-red-600 text-xs transition">🗑️</button>
                 </div>
-                <p className="text-gray-600 text-xs mt-1">{task.description || '---'}</p>
-                {task.due_date && (
-                  <div className="mt-2 text-[11px] text-gray-400 font-medium flex items-center gap-1">
-                    📅 {task.due_date}
+                <p className="text-gray-400 text-xs mb-3">{task.description || '---'}</p>
+                
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
+                  <div className="flex items-center gap-2">
+                    {getPriorityBadge(task.priority)}
+                    {task.due_date && <span className="text-[11px] text-gray-300">📅 {task.due_date}</span>}
                   </div>
-                )}
-                <div className="mt-3 flex justify-start gap-1">
-                  <button onClick={() => handleUpdateStatus(task.id, 'in_progress')} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded hover:bg-gray-200">
+                  <button onClick={() => handleUpdateStatus(task.id, 'in_progress')} className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-lg hover:bg-gray-200 transition">
                     ← Reopen
                   </button>
                 </div>
               </div>
             ))}
-            {doneTasks.length === 0 && <p className="text-gray-400 text-xs italic">{t('projects.noTasks')}</p>}
+            {doneTasks.length === 0 && <p className="text-gray-400 text-xs italic px-1">{t('projects.noTasks')}</p>}
           </div>
         </div>
 
