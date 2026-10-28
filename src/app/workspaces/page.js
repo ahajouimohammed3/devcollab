@@ -3,39 +3,51 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from '@/context/LanguageContext'
+import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 
 export default function WorkspacesPage() {
-  const { t, locale, changeLanguage } = useTranslation()
+  const { t, locale } = useTranslation()
+  const { user } = useUser() // جلب بيانات المستخدم من Clerk
+  
   const [workspaces, setWorkspaces] = useState([])
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
 
   const fetchWorkspaces = async () => {
-    const { data, error } = await supabase.from('workspaces').select('*')
-    if (error) {
-      console.error('Error fetching workspaces:', error.message)
-    } else {
-      setWorkspaces(data || [])
-    }
+    if (!user) return
+
+    const { data, error } = await supabase
+      .from('workspaces')
+      .select('*')
+      .eq('user_id', user.id) // جلب مساحات العمل الخاصة بهذا المستخدم فقط
+
+    if (error) console.error('Error fetching workspaces:', error.message)
+    else setWorkspaces(data || [])
   }
 
   useEffect(() => {
-    fetchWorkspaces()
-  }, [])
+    if (user) {
+      fetchWorkspaces()
+    }
+  }, [user])
 
   const handleCreateWorkspace = async (e) => {
     e.preventDefault()
-    if (!name.trim()) return
+    if (!name.trim() || !user) return
 
     setLoading(true)
     const { error } = await supabase.from('workspaces').insert([
-      { name, description }
+      {
+        name,
+        description,
+        user_id: user.id // حفظ معرف المستخدم مع مساحة العمل
+      }
     ])
 
     if (error) {
-      console.error('Error creating workspace details:', error.message, error.details, error.hint)
+      console.error('Error creating workspace:', error.message)
     } else {
       setName('')
       setDescription('')
@@ -44,82 +56,100 @@ export default function WorkspacesPage() {
     setLoading(false)
   }
 
-  return (
-    <main className="p-8 max-w-4xl mx-auto">
-      {/* Top Bar with Languages and Dashboard Link */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">{t('workspaces.title')}</h1>
-        
-        <div className="flex items-center gap-3">
-          {/* زر الانتقال للوحة الإحصائيات */}
-          <Link 
-            href="/dashboard" 
-            className="bg-indigo-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-indigo-700 transition flex items-center gap-1 shadow-sm"
-          >
-            📊 {locale === 'ar' ? 'الإحصائيات' : locale === 'fr' ? 'Statistiques' : 'Dashboard'}
-          </Link>
+  const handleDeleteWorkspace = async (id) => {
+    const { error } = await supabase
+      .from('workspaces')
+      .delete()
+      .eq('id', id)
 
-          <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
-            <button onClick={() => changeLanguage('fr')} className={`px-3 py-1 text-xs rounded-md transition ${locale === 'fr' ? 'bg-blue-600 text-white font-bold' : 'text-gray-600 hover:bg-gray-200'}`}>Français</button>
-            <button onClick={() => changeLanguage('ar')} className={`px-3 py-1 text-xs rounded-md transition ${locale === 'ar' ? 'bg-blue-600 text-white font-bold' : 'text-gray-600 hover:bg-gray-200'}`}>العربية</button>
-            <button onClick={() => changeLanguage('en')} className={`px-3 py-1 text-xs rounded-md transition ${locale === 'en' ? 'bg-blue-600 text-white font-bold' : 'text-gray-600 hover:bg-gray-200'}`}>English</button>
-          </div>
+    if (error) {
+      console.error('Error deleting workspace:', error.message)
+    } else {
+      fetchWorkspaces()
+    }
+  }
+
+  return (
+    <main className="p-8 max-w-5xl mx-auto">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-800">
+            {locale === 'ar' ? 'مساحات العمل' : locale === 'fr' ? 'Espaces de travail' : 'Workspaces'}
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            {locale === 'ar' ? 'إدارة مشاريعك وفريقك بكل احترافية' : locale === 'fr' ? 'Gérez vos projets et votre équipe' : 'Manage your projects efficiently'}
+          </p>
         </div>
       </div>
 
-      {/* Form لإضافة مساحة عمل جديدة */}
-      <form onSubmit={handleCreateWorkspace} className="bg-white p-6 rounded-xl shadow-md mb-8 border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">{t('workspaces.createTitle')}</h2>
-        
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-600">{t('workspaces.nameLabel')}</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder={t('workspaces.namePlaceholder')}
-            required
-          />
+      {/* Form لإنشاء مساحة عمل جديدة */}
+      <form onSubmit={handleCreateWorkspace} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+        <h2 className="text-lg font-bold text-gray-800 mb-4">
+          {locale === 'ar' ? 'إنشاء مساحة عمل جديدة' : locale === 'fr' ? 'Créer un nouvel espace' : 'Create New Workspace'}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              {locale === 'ar' ? 'اسم المساحة' : locale === 'fr' ? "Nom de l'espace" : 'Workspace Name'}
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+              placeholder="e.g. Marketing Team"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              {locale === 'ar' ? 'الوصف' : locale === 'fr' ? 'Description' : 'Description'}
+            </label>
+            <input
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+              placeholder="e.g. Main workspace for projects"
+            />
+          </div>
         </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 text-gray-600">{t('workspaces.descLabel')}</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder={t('workspaces.descPlaceholder')}
-          />
-        </div>
-
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition font-medium shadow-sm"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-md shadow-blue-500/10"
         >
-          {loading ? t('workspaces.loading') : t('workspaces.submitBtn')}
+          {loading ? '...' : (locale === 'ar' ? 'إضافة المساحة' : locale === 'fr' ? 'Ajouter' : 'Create Workspace')}
         </button>
       </form>
 
       {/* قائمة مساحات العمل */}
-      <div className="grid grid-cols-1 gap-4">
+      <h2 className="text-xl font-bold text-gray-800 mb-4">
+        {locale === 'ar' ? 'مساحات العمل الخاصة بك' : locale === 'fr' ? 'Vos espaces' : 'Your Workspaces'}
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {workspaces.map((ws) => (
-          <div key={ws.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center hover:shadow-md transition">
+          <div key={ws.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-start hover:shadow-md transition">
             <div>
-              <h3 className="text-xl font-bold text-gray-800">{ws.name}</h3>
-              <p className="text-gray-600 text-sm mt-1">{ws.description || '---'}</p>
+              <Link href={`/workspaces/${ws.id}`} className="text-lg font-bold text-gray-900 hover:text-blue-600 transition">
+                {ws.name}
+              </Link>
+              <p className="text-gray-500 text-xs mt-1">{ws.description || '---'}</p>
             </div>
-            <Link
-              href={`/workspaces/${ws.id}`}
-              className="bg-gray-100 text-blue-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-50 transition border border-gray-200"
+            <button
+              onClick={() => handleDeleteWorkspace(ws.id)}
+              className="text-gray-400 hover:text-red-600 p-2 rounded-lg transition"
+              title="Delete"
             >
-              {locale === 'ar' ? 'عرض المشاريع ←' : locale === 'fr' ? 'Voir Projets ←' : 'View Projects →'}
-            </Link>
+              🗑️
+            </button>
           </div>
         ))}
         {workspaces.length === 0 && (
-          <p className="text-gray-400 text-center py-8">{t('workspaces.noWorkspaces')}</p>
+          <p className="text-gray-400 text-sm italic col-span-2">
+            {locale === 'ar' ? 'لا توجد مساحات عمل حالياً. أنشئ واحدة للبدء!' : locale === 'fr' ? 'Aucun espace trouvé.' : 'No workspaces found.'}
+          </p>
         )}
       </div>
     </main>

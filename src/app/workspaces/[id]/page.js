@@ -3,13 +3,16 @@
 import { useState, useEffect, use, Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from '@/context/LanguageContext'
+import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 
 function WorkspaceContent({ params }) {
   const resolvedParams = use(params)
   const workspaceId = resolvedParams.id
 
-  const { t, locale, changeLanguage } = useTranslation()
+  const { t, locale } = useTranslation()
+  const { user } = useUser()
+
   const [workspace, setWorkspace] = useState(null)
   const [projects, setProjects] = useState([])
   const [projectName, setProjectName] = useState('')
@@ -17,43 +20,49 @@ function WorkspaceContent({ params }) {
   const [loading, setLoading] = useState(false)
 
   const fetchData = async () => {
+    if (!user) return
+
+    // جلب بيانات مساحة العمل
     const { data: wsData, error: wsError } = await supabase
       .from('workspaces')
       .select('*')
       .eq('id', workspaceId)
       .single()
 
-    if (wsError) console.error('Error fetching workspace:', wsError)
+    if (wsError) console.error('Error fetching workspace:', wsError.message)
     else setWorkspace(wsData)
 
+    // جلب المشاريع الخاصة بهذا المستخدم ومساحة العمل هذه
     const { data: projData, error: projError } = await supabase
       .from('projects')
       .select('*')
       .eq('workspace_id', workspaceId)
+      .eq('user_id', user.id)
 
-    if (projError) console.error('Error fetching projects:', projError)
+    if (projError) console.error('Error fetching projects:', projError.message)
     else setProjects(projData || [])
   }
 
   useEffect(() => {
-    if (workspaceId) fetchData()
-  }, [workspaceId])
+    if (workspaceId && user) fetchData()
+  }, [workspaceId, user])
 
   const handleCreateProject = async (e) => {
     e.preventDefault()
-    if (!projectName.trim()) return
+    if (!projectName.trim() || !user) return
 
     setLoading(true)
     const { error } = await supabase.from('projects').insert([
       {
         name: projectName,
         description: projectDesc,
-        workspace_id: workspaceId
+        workspace_id: workspaceId,
+        user_id: user.id // حفظ معرف المستخدم
       }
     ])
 
     if (error) {
-      console.error('Error creating project:', error)
+      console.error('Error creating project:', error.message)
     } else {
       setProjectName('')
       setProjectDesc('')
@@ -62,90 +71,102 @@ function WorkspaceContent({ params }) {
     setLoading(false)
   }
 
+  const handleDeleteProject = async (projectId) => {
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', projectId)
+
+    if (error) {
+      console.error('Error deleting project:', error.message)
+    } else {
+      fetchData()
+    }
+  }
+
   return (
     <main className="p-8 max-w-5xl mx-auto">
-      {/* Top Bar & Language Switcher */}
-      <div className="flex justify-between items-center mb-6">
-        <Link href="/workspaces" className="text-blue-600 hover:underline text-sm font-medium">
-          ← {t('workspaces.title')}
+      {/* Top Navigation */}
+      <div className="mb-6">
+        <Link className="text-blue-600 hover:underline text-sm font-semibold flex items-center gap-1" href="/workspaces">
+          ← {locale === 'ar' ? 'الرجوع لمساحات العمل' : locale === 'fr' ? 'Retour aux espaces' : 'Back to Workspaces'}
         </Link>
-        <div className="flex gap-2">
-          <button 
-            onClick={() => changeLanguage('fr')} 
-            className={`px-3 py-1 text-xs rounded ${locale === 'fr' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          >
-            Français
-          </button>
-          <button 
-            onClick={() => changeLanguage('ar')} 
-            className={`px-3 py-1 text-xs rounded ${locale === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          >
-            العربية
-          </button>
-          <button 
-            onClick={() => changeLanguage('en')} 
-            className={`px-3 py-1 text-xs rounded ${locale === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          >
-            English
-          </button>
-        </div>
       </div>
 
       {/* Workspace Header */}
       {workspace && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">{workspace.name}</h1>
-          <p className="text-gray-600 mt-2">{workspace.description || '---'}</p>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+          <h1 className="text-3xl font-extrabold text-gray-800">{workspace.name}</h1>
+          <p className="text-gray-500 text-sm mt-1">{workspace.description || '---'}</p>
         </div>
       )}
 
-      {/* Form لإضافة Project جديد */}
-      <form onSubmit={handleCreateProject} className="bg-white p-6 rounded-lg shadow-md mb-8 border">
-        <h2 className="text-xl font-semibold mb-4">{t('projects.createTitle')}</h2>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">{t('projects.nameLabel')}</label>
-          <input
-            type="text"
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
-            className="w-full p-2 border rounded-md"
-            placeholder={t('projects.namePlaceholder')}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">{t('projects.descLabel')}</label>
-          <textarea
-            value={projectDesc}
-            onChange={(e) => setProjectDesc(e.target.value)}
-            className="w-full p-2 border rounded-md"
-            placeholder={t('projects.descPlaceholder')}
-          />
+      {/* Form لإنشاء مشروع جديد */}
+      <form onSubmit={handleCreateProject} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+        <h2 className="text-lg font-bold text-gray-800 mb-4">
+          {locale === 'ar' ? 'إضافة مشروع جديد' : locale === 'fr' ? 'Créer un nouveau projet' : 'Create New Project'}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              {locale === 'ar' ? 'اسم المشروع' : locale === 'fr' ? 'Nom du projet' : 'Project Name'}
+            </label>
+            <input
+              type="text"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+              placeholder="e.g. Redesign Landing Page"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              {locale === 'ar' ? 'الوصف' : locale === 'fr' ? 'Description' : 'Description'}
+            </label>
+            <input
+              type="text"
+              value={projectDesc}
+              onChange={(e) => setProjectDesc(e.target.value)}
+              className="w-full p-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+              placeholder="e.g. Tasks for UI design"
+            />
+          </div>
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-md shadow-blue-500/10"
         >
-          {loading ? t('projects.loading') : t('projects.submitBtn')}
+          {loading ? '...' : (locale === 'ar' ? 'إضافة المشروع' : locale === 'fr' ? 'Ajouter' : 'Create Project')}
         </button>
       </form>
 
-      {/* قائمة المشاريع مع الروابط لصفحة المهام */}
-      <h2 className="text-2xl font-semibold mb-4">{t('projects.title')}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projects.map((project) => (
-          <Link 
-            key={project.id} 
-            href={`/projects/${project.id}`}
-            className="block bg-white p-5 rounded-lg shadow border border-gray-100 hover:border-blue-500 hover:shadow-md transition cursor-pointer"
-          >
-            <h3 className="text-xl font-bold text-gray-800">{project.name}</h3>
-            <p className="text-gray-600 mt-2 text-sm">{project.description || '---'}</p>
-          </Link>
+      {/* قائمة المشاريع */}
+      <h2 className="text-xl font-bold text-gray-800 mb-4">
+        {locale === 'ar' ? 'المشاريع' : locale === 'fr' ? 'Projets' : 'Projects'}
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {projects.map((proj) => (
+          <div key={proj.id} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-start hover:shadow-md transition">
+            <div>
+              <Link href={`/projects/${proj.id}`} className="text-base font-bold text-gray-900 hover:text-blue-600 transition">
+                🚀 {proj.name}
+              </Link>
+              <p className="text-gray-500 text-xs mt-1">{proj.description || '---'}</p>
+            </div>
+            <button
+              onClick={() => handleDeleteProject(proj.id)}
+              className="text-gray-400 hover:text-red-600 p-1 rounded transition"
+            >
+              🗑️
+            </button>
+          </div>
         ))}
         {projects.length === 0 && (
-          <p className="text-gray-500">{t('projects.noProjects')}</p>
+          <p className="text-gray-400 text-sm italic col-span-3">
+            {locale === 'ar' ? 'لا توجد مشاريع حالياً.' : locale === 'fr' ? 'Aucun projet trouvé.' : 'No projects found.'}
+          </p>
         )}
       </div>
     </main>
@@ -154,7 +175,7 @@ function WorkspaceContent({ params }) {
 
 export default function WorkspaceDetailsPage({ params }) {
   return (
-    <Suspense fallback={<div className="p-8 text-center">Chargement...</div>}>
+    <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
       <WorkspaceContent params={params} />
     </Suspense>
   )
