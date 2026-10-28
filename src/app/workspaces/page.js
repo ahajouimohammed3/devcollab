@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from '@/context/LanguageContext'
+import Link from 'next/link'
 
 export default function WorkspacesPage() {
   const { t, locale, changeLanguage } = useTranslation()
@@ -49,23 +50,23 @@ export default function WorkspacesPage() {
 
   return (
     <main className="p-8 max-w-4xl mx-auto">
-      {/* زر تبديل اللغات */}
+      {/* Language Switcher */}
       <div className="flex justify-end gap-2 mb-6">
         <button 
           onClick={() => changeLanguage('fr')} 
-          className={`px-3 py-1 rounded ${locale === 'fr' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          className={`px-3 py-1 text-xs rounded ${locale === 'fr' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
         >
           Français
         </button>
         <button 
           onClick={() => changeLanguage('ar')} 
-          className={`px-3 py-1 rounded ${locale === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          className={`px-3 py-1 text-xs rounded ${locale === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
         >
           العربية
         </button>
         <button 
           onClick={() => changeLanguage('en')} 
-          className={`px-3 py-1 rounded ${locale === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          className={`px-3 py-1 text-xs rounded ${locale === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
         >
           English
         </button>
@@ -105,14 +106,18 @@ export default function WorkspacesPage() {
         </button>
       </form>
 
-      {/* عرض مساحات العمل */}
+      {/* عرض مساحات العمل مع روابط الصفحات */}
       <h2 className="text-2xl font-semibold mb-4">{t('workspaces.currentList')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {workspaces.map((ws) => (
-          <div key={ws.id} className="bg-white p-5 rounded-lg shadow border">
+          <Link 
+            key={ws.id} 
+            href={`/workspaces/${ws.id}`}
+            className="block bg-white p-5 rounded-lg shadow border hover:shadow-lg hover:border-blue-500 transition cursor-pointer"
+          >
             <h3 className="text-xl font-bold text-blue-600">{ws.name}</h3>
-            <p className="text-gray-600 mt-2">{ws.description || '---'}</p>
-          </div>
+            <p className="text-gray-600 mt-2 text-sm">{ws.description || '---'}</p>
+          </Link>
         ))}
         {workspaces.length === 0 && (
           <p className="text-gray-500">{t('workspaces.noWorkspaces')}</p>
