@@ -77,7 +77,21 @@ function ProjectContent({ params }) {
     }
   }
 
-  // تصفية المهام بناءً على شريط البحث (العنوان أو الوصف)
+  // دالة حذف المهمة
+  const handleDeleteTask = async (taskId) => {
+    const { error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', taskId)
+
+    if (error) {
+      console.error('Error deleting task:', error.message)
+    } else {
+      fetchData()
+    }
+  }
+
+  // تصفية المهام بناءً على شريط البحث
   const filteredTasks = tasks.filter((task) => 
     task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -143,7 +157,7 @@ function ProjectContent({ params }) {
         </button>
       </form>
 
-      {/* شريط البحث (Search Bar) */}
+      {/* شريط البحث */}
       <div className="mb-6">
         <input
           type="text"
@@ -166,8 +180,17 @@ function ProjectContent({ params }) {
           </h3>
           <div className="space-y-3">
             {todoTasks.map((task) => (
-              <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100">
-                <h4 className="font-bold text-gray-800">{task.title}</h4>
+              <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100 relative group">
+                <div className="flex justify-between items-start">
+                  <h4 className="font-bold text-gray-800">{task.title}</h4>
+                  <button 
+                    onClick={() => handleDeleteTask(task.id)}
+                    className="text-gray-400 hover:text-red-600 text-xs transition"
+                    title="Delete Task"
+                  >
+                    🗑️
+                  </button>
+                </div>
                 <p className="text-gray-600 text-xs mt-1">{task.description || '---'}</p>
                 <div className="mt-3 flex justify-end gap-1">
                   <button 
@@ -191,8 +214,17 @@ function ProjectContent({ params }) {
           </h3>
           <div className="space-y-3">
             {inProgressTasks.map((task) => (
-              <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100">
-                <h4 className="font-bold text-gray-800">{task.title}</h4>
+              <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100 relative group">
+                <div className="flex justify-between items-start">
+                  <h4 className="font-bold text-gray-800">{task.title}</h4>
+                  <button 
+                    onClick={() => handleDeleteTask(task.id)}
+                    className="text-gray-400 hover:text-red-600 text-xs transition"
+                    title="Delete Task"
+                  >
+                    🗑️
+                  </button>
+                </div>
                 <p className="text-gray-600 text-xs mt-1">{task.description || '---'}</p>
                 <div className="mt-3 flex justify-between gap-1">
                   <button 
@@ -222,8 +254,17 @@ function ProjectContent({ params }) {
           </h3>
           <div className="space-y-3">
             {doneTasks.map((task) => (
-              <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100 opacity-80">
-                <h4 className="font-bold text-gray-800 line-through">{task.title}</h4>
+              <div key={task.id} className="bg-white p-4 rounded shadow-sm border border-gray-100 opacity-80 relative group">
+                <div className="flex justify-between items-start">
+                  <h4 className="font-bold text-gray-800 line-through">{task.title}</h4>
+                  <button 
+                    onClick={() => handleDeleteTask(task.id)}
+                    className="text-gray-400 hover:text-red-600 text-xs transition"
+                    title="Delete Task"
+                  >
+                    🗑️
+                  </button>
+                </div>
                 <p className="text-gray-600 text-xs mt-1">{task.description || '---'}</p>
                 <div className="mt-3 flex justify-start gap-1">
                   <button 
