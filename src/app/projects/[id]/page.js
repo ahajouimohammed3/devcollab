@@ -14,10 +14,10 @@ function ProjectContent({ params }) {
   const [tasks, setTasks] = useState([])
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDesc, setTaskDesc] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(false)
 
   const fetchData = async () => {
-    // جلب تفاصيل المشروع
     const { data: projData, error: projError } = await supabase
       .from('projects')
       .select('*')
@@ -27,7 +27,6 @@ function ProjectContent({ params }) {
     if (projError) console.error('Error fetching project:', projError.message)
     else setProject(projData)
 
-    // جلب المهام التابعة للمشروع
     const { data: taskData, error: taskError } = await supabase
       .from('tasks')
       .select('*')
@@ -41,7 +40,6 @@ function ProjectContent({ params }) {
     if (projectId) fetchData()
   }, [projectId])
 
-  // إضافة مهمة جديدة مع طباعة تفاصيل الخطأ بدقة إن وجدت
   const handleCreateTask = async (e) => {
     e.preventDefault()
     if (!taskTitle.trim()) return
@@ -66,7 +64,6 @@ function ProjectContent({ params }) {
     setLoading(false)
   }
 
-  // تغيير حالة المهمة (Kanban Update)
   const handleUpdateStatus = async (taskId, newStatus) => {
     const { error } = await supabase
       .from('tasks')
@@ -80,10 +77,15 @@ function ProjectContent({ params }) {
     }
   }
 
-  // تصفية المهام حسب الأعمدة الثلاثة
-  const todoTasks = tasks.filter((t) => t.status === 'todo')
-  const inProgressTasks = tasks.filter((t) => t.status === 'in_progress')
-  const doneTasks = tasks.filter((t) => t.status === 'done')
+  // تصفية المهام بناءً على شريط البحث (العنوان أو الوصف)
+  const filteredTasks = tasks.filter((task) => 
+    task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  )
+
+  const todoTasks = filteredTasks.filter((t) => t.status === 'todo')
+  const inProgressTasks = filteredTasks.filter((t) => t.status === 'in_progress')
+  const doneTasks = filteredTasks.filter((t) => t.status === 'done')
 
   return (
     <main className="p-8 max-w-6xl mx-auto">
@@ -141,7 +143,18 @@ function ProjectContent({ params }) {
         </button>
       </form>
 
-      {/* لوحة التحكم Kanban Board (ثلاثة أعمدة) */}
+      {/* شريط البحث (Search Bar) */}
+      <div className="mb-6">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={locale === 'ar' ? 'بحث عن مهمة...' : locale === 'fr' ? 'Rechercher une tâche...' : 'Search tasks...'}
+          className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+        />
+      </div>
+
+      {/* لوحة التحكم Kanban Board */}
       <h2 className="text-2xl font-semibold mb-4">{t('projects.title')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
@@ -166,7 +179,7 @@ function ProjectContent({ params }) {
                 </div>
               </div>
             ))}
-            {todoTasks.length === 0 && <p className="text-gray-400 text-xs italic">{locale === 'ar' ? 'لا توجد مهام' : locale === 'fr' ? 'Aucune tâche' : 'No tasks'}</p>}
+            {todoTasks.length === 0 && <p className="text-gray-400 text-xs italic">{locale === 'ar' ? 'لا توجد مهام مطابقة' : locale === 'fr' ? 'Aucune tâche trouvée' : 'No tasks'}</p>}
           </div>
         </div>
 
@@ -197,7 +210,7 @@ function ProjectContent({ params }) {
                 </div>
               </div>
             ))}
-            {inProgressTasks.length === 0 && <p className="text-gray-400 text-xs italic">{locale === 'ar' ? 'لا توجد مهام' : locale === 'fr' ? 'Aucune tâche' : 'No tasks'}</p>}
+            {inProgressTasks.length === 0 && <p className="text-gray-400 text-xs italic">{locale === 'ar' ? 'لا توجد مهام مطابقة' : locale === 'fr' ? 'Aucune tâche trouvée' : 'No tasks'}</p>}
           </div>
         </div>
 
@@ -222,7 +235,7 @@ function ProjectContent({ params }) {
                 </div>
               </div>
             ))}
-            {doneTasks.length === 0 && <p className="text-gray-400 text-xs italic">{locale === 'ar' ? 'لا توجد مهام' : locale === 'fr' ? 'Aucune tâche' : 'No tasks'}</p>}
+            {doneTasks.length === 0 && <p className="text-gray-400 text-xs italic">{locale === 'ar' ? 'لا توجد مهام مطابقة' : locale === 'fr' ? 'Aucune tâche trouvée' : 'No tasks'}</p>}
           </div>
         </div>
 
