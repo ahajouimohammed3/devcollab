@@ -3,13 +3,13 @@ import './globals.css'
 
 export const metadata = {
   title: 'DevCollab - Project Management',
-  description: 'Manage your workspaces and tasks efficiently',
+  description: 'A modern project management app supporting multiple languages',
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body>
+      <body suppressHydrationWarning={true}>
         <LanguageProvider>
           {children}
         </LanguageProvider>

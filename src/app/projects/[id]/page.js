@@ -15,6 +15,7 @@ function ProjectContent({ params }) {
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDesc, setTaskDesc] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all') // حالة الفلتر الجديدة
   const [loading, setLoading] = useState(false)
 
   const fetchData = async () => {
@@ -55,7 +56,7 @@ function ProjectContent({ params }) {
     ])
 
     if (error) {
-      console.error('Error creating task details:', error.message, error.details, error.hint)
+      console.error('Error creating task details:', error.message)
     } else {
       setTaskTitle('')
       setTaskDesc('')
@@ -77,7 +78,6 @@ function ProjectContent({ params }) {
     }
   }
 
-  // دالة حذف المهمة
   const handleDeleteTask = async (taskId) => {
     const { error } = await supabase
       .from('tasks')
@@ -91,11 +91,16 @@ function ProjectContent({ params }) {
     }
   }
 
-  // تصفية المهام بناءً على شريط البحث
-  const filteredTasks = tasks.filter((task) => 
-    task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  )
+  // تصفية المهام بناءً على شريط البحث والفلتر
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch = 
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    
+    const matchesFilter = statusFilter === 'all' || task.status === statusFilter
+
+    return matchesSearch && matchesFilter
+  })
 
   const todoTasks = filteredTasks.filter((t) => t.status === 'todo')
   const inProgressTasks = filteredTasks.filter((t) => t.status === 'in_progress')
@@ -157,15 +162,41 @@ function ProjectContent({ params }) {
         </button>
       </form>
 
-      {/* شريط البحث */}
-      <div className="mb-6">
+      {/* شريط البحث وأزرار الفلترة */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={locale === 'ar' ? 'بحث عن مهمة...' : locale === 'fr' ? 'Rechercher une tâche...' : 'Search tasks...'}
-          className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          className="flex-1 p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
         />
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          <button 
+            onClick={() => setStatusFilter('all')} 
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'all' ? 'bg-gray-800 text-white' : 'bg-white border text-gray-600 hover:bg-gray-100'}`}
+          >
+            {locale === 'ar' ? 'الكل' : locale === 'fr' ? 'Tous' : 'All'}
+          </button>
+          <button 
+            onClick={() => setStatusFilter('todo')} 
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'todo' ? 'bg-gray-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-100'}`}
+          >
+            📌 {locale === 'ar' ? 'قيد الانتظار' : locale === 'fr' ? 'À faire' : 'To Do'}
+          </button>
+          <button 
+            onClick={() => setStatusFilter('in_progress')} 
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'in_progress' ? 'bg-blue-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-100'}`}
+          >
+            ⏳ {locale === 'ar' ? 'قيد الإنجاز' : locale === 'fr' ? 'En cours' : 'In Progress'}
+          </button>
+          <button 
+            onClick={() => setStatusFilter('done')} 
+            className={`px-4 py-2 text-xs font-semibold rounded-lg transition ${statusFilter === 'done' ? 'bg-green-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-100'}`}
+          >
+            ✅ {locale === 'ar' ? 'مكتملة' : locale === 'fr' ? 'Terminé' : 'Done'}
+          </button>
+        </div>
       </div>
 
       {/* لوحة التحكم Kanban Board */}
@@ -202,7 +233,7 @@ function ProjectContent({ params }) {
                 </div>
               </div>
             ))}
-            {todoTasks.length === 0 && <p className="text-gray-400 text-xs italic">{locale === 'ar' ? 'لا توجد مهام مطابقة' : locale === 'fr' ? 'Aucune tâche trouvée' : 'No tasks'}</p>}
+            {todoTasks.length === 0 && <p className="text-gray-400 text-xs italic">{t('projects.noTasks')}</p>}
           </div>
         </div>
 
@@ -242,7 +273,7 @@ function ProjectContent({ params }) {
                 </div>
               </div>
             ))}
-            {inProgressTasks.length === 0 && <p className="text-gray-400 text-xs italic">{locale === 'ar' ? 'لا توجد مهام مطابقة' : locale === 'fr' ? 'Aucune tâche trouvée' : 'No tasks'}</p>}
+            {inProgressTasks.length === 0 && <p className="text-gray-400 text-xs italic">{t('projects.noTasks')}</p>}
           </div>
         </div>
 
@@ -276,7 +307,7 @@ function ProjectContent({ params }) {
                 </div>
               </div>
             ))}
-            {doneTasks.length === 0 && <p className="text-gray-400 text-xs italic">{locale === 'ar' ? 'لا توجد مهام مطابقة' : locale === 'fr' ? 'Aucune tâche trouvée' : 'No tasks'}</p>}
+            {doneTasks.length === 0 && <p className="text-gray-400 text-xs italic">{t('projects.noTasks')}</p>}
           </div>
         </div>
 
