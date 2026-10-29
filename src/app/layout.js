@@ -1,27 +1,36 @@
+import './globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
 import { LanguageProvider } from '@/context/LanguageContext'
-import Navbar from '@/components/Navbar'
-import Sidebar from '@/components/Sidebar'
-import './globals.css'
+import AppShell from '@/components/AppShell'
 
 export const metadata = {
-  title: 'DevCollab - Project Management',
-  description: 'A modern project management app supporting multiple languages',
+  title: 'DevCollab',
+  description: 'Plateforme collaborative de gestion de projets',
+  icons: {
+    icon: '/icon.svg',
+  },
 }
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
-      <html lang="fr">
-        <body suppressHydrationWarning={true} className="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col">
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: '#4f46e5',
+          colorText: '#0f172a',
+          colorBackground: '#ffffff',
+          borderRadius: '1rem',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+        },
+      }}
+    >
+      <html lang="fr" suppressHydrationWarning>
+        <body
+          className="bg-slate-50 text-slate-900 antialiased font-sans"
+          suppressHydrationWarning
+        >
           <LanguageProvider>
-            <Navbar />
-            <div className="flex flex-1">
-              <Sidebar />
-              <div className="flex-1 overflow-y-auto">
-                {children}
-              </div>
-            </div>
+            <AppShell>{children}</AppShell>
           </LanguageProvider>
         </body>
       </html>

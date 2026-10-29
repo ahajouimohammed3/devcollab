@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, use, Suspense } from 'react'
+import { useState, useEffect, use, Suspense, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from '@/context/LanguageContext'
 import { useRole } from '@/hooks/useRole'
@@ -35,7 +35,7 @@ function ProjectContent({ params }) {
   const [commentAuthor, setCommentAuthor] = useState('')
   const [commentLoading, setCommentLoading] = useState(false)
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const { data: projData, error: projError } = await supabase
       .from('projects')
       .select('*')
@@ -52,11 +52,11 @@ function ProjectContent({ params }) {
 
     if (taskError) console.error('Erreur lors de la récupération des tâches:', taskError.message)
     else setTasks(taskData || [])
-  }
+  }, [projectId])
 
   useEffect(() => {
-    if (projectId) fetchData()
-  }, [projectId])
+    if (projectId) void Promise.resolve().then(fetchData)
+  }, [fetchData, projectId])
 
   // Récupérer les commentaires de la tâche sélectionnée
   const fetchComments = async (taskId) => {
@@ -220,7 +220,7 @@ function ProjectContent({ params }) {
   ]
 
   return (
-    <main className="p-8 max-w-7xl mx-auto min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/20 to-slate-100 font-sans">
+    <main className="mx-auto min-h-[calc(100vh-76px)] w-full max-w-[1480px] bg-gradient-to-br from-slate-50 via-indigo-50/20 to-slate-100 px-4 py-6 font-sans sm:px-7 sm:py-9" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
       
       {/* Top Navigation Back Link */}
       <div className="flex justify-between items-center mb-6">
@@ -297,7 +297,7 @@ function ProjectContent({ params }) {
             {t('projects.createTitle')}
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 mb-6">
             <div className="lg:col-span-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{t('projects.nameLabel')}</label>
               <input
@@ -325,7 +325,7 @@ function ProjectContent({ params }) {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                Date d'échéance
+                Date d&apos;échéance
               </label>
               <input
                 type="date"
@@ -418,7 +418,7 @@ function ProjectContent({ params }) {
 
       {/* Kanban Board */}
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {columns.map((col) => (
             <Droppable key={col.id} droppableId={col.id} isDropDisabled={!canEdit}>
               {(provided, snapshot) => (
@@ -647,7 +647,7 @@ function ProjectContent({ params }) {
 
 export default function ProjectDetailsPage({ params }) {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-slate-500 font-medium">Chargement du chef-d'œuvre... ✨</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-slate-500 font-medium">Chargement du chef-d&apos;œuvre... ✨</div>}>
       <ProjectContent params={params} />
     </Suspense>
   )

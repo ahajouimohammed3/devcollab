@@ -1,30 +1,47 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useEffect, useSyncExternalStore } from 'react'
 import fr from '@/locales/fr.json'
 import ar from '@/locales/ar.json'
 import en from '@/locales/en.json'
 
 const translations = { fr, ar, en }
-
+const listeners = new Set()
+let activeLocale = 'fr'
 const LanguageContext = createContext()
 
+const getLocale = () => activeLocale
+const getServerLocale = () => 'fr'
+
+const subscribeToLocale = (listener) => {
+  listeners.add(listener)
+
+  if (typeof window !== 'undefined') {
+    const savedLang = localStorage.getItem('devcollab_lang')
+    if (savedLang && savedLang in translations && savedLang !== activeLocale) {
+      activeLocale = savedLang
+    }
+  }
+
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
 export function LanguageProvider({ children }) {
-  
-  const [locale, setLocale] = useState('fr')
+  const locale = useSyncExternalStore(subscribeToLocale, getLocale, getServerLocale)
 
   useEffect(() => {
-    const savedLang = localStorage.getItem('devcollab_lang')
-    if (savedLang && translations[savedLang]) {
-      setLocale(savedLang)
-    }
-  }, [])
+    document.documentElement.lang = locale
+    document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr'
+  }, [locale])
 
   const changeLanguage = (lang) => {
-    if (translations[lang]) {
-      setLocale(lang)
-      localStorage.setItem('devcollab_lang', lang)
-    }
+    if (!(lang in translations) || lang === activeLocale) return
+
+    activeLocale = lang
+    localStorage.setItem('devcollab_lang', lang)
+    listeners.forEach((listener) => listener())
   }
 
   const t = (key) => {
