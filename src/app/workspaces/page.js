@@ -256,7 +256,6 @@ export default function WorkspacesPage() {
           height: 8px;
           border-radius: 50%;
           background: #6366f1;
-          box-shadow: 0 0 0 4px #e0e7ff;
         }
 
         h1 {
@@ -280,9 +279,8 @@ export default function WorkspacesPage() {
           margin-bottom: 40px;
           padding: 28px;
           border: 1px solid #e2e8f0;
-          border-radius: 20px;
+          border-radius: 8px;
           background: rgba(255, 255, 255, 0.94);
-          box-shadow: 0 12px 32px rgba(15, 23, 42, 0.055), 0 2px 6px rgba(15, 23, 42, 0.025);
         }
 
         .section-heading {
@@ -304,7 +302,7 @@ export default function WorkspacesPage() {
         .section-icon {
           width: 44px;
           height: 44px;
-          border-radius: 14px;
+          border-radius: 8px;
         }
 
         .section-heading h2,
@@ -349,14 +347,14 @@ export default function WorkspacesPage() {
           min-height: 48px;
           padding: 0.75rem 1rem;
           border: 1px solid #cbd5e1;
-          border-radius: 11px;
+          border-radius: 8px;
           outline: none;
           background: #fff;
           color: #0f172a;
           font: inherit;
           font-size: 0.94rem;
           text-align: start;
-          transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+          transition: border-color 160ms ease, background 160ms ease;
         }
 
         .field input::placeholder {
@@ -370,7 +368,8 @@ export default function WorkspacesPage() {
         .field input:focus {
           border-color: #6366f1;
           background: #fff;
-          box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14);
+          outline: 2px solid rgba(99, 102, 241, 0.28);
+          outline-offset: 1px;
         }
 
         .form-footer {
@@ -388,21 +387,19 @@ export default function WorkspacesPage() {
           gap: 9px;
           padding: 0 19px;
           border: 1px solid #4f46e5;
-          border-radius: 11px;
+          border-radius: 8px;
           background: #4f46e5;
           color: #fff;
           cursor: pointer;
           font: inherit;
           font-size: 0.9rem;
           font-weight: 700;
-          box-shadow: 0 5px 12px rgba(79, 70, 229, 0.2);
-          transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+          transition: transform 160ms ease, background 160ms ease;
         }
 
         .primary-button:hover:not(:disabled) {
           transform: translateY(-1px);
           background: #4338ca;
-          box-shadow: 0 8px 18px rgba(79, 70, 229, 0.25);
         }
 
         .primary-button:focus-visible,
@@ -458,16 +455,14 @@ export default function WorkspacesPage() {
           min-width: 0;
           padding: 21px;
           border: 1px solid #e2e8f0;
-          border-radius: 17px;
+          border-radius: 8px;
           background: #fff;
-          box-shadow: 0 3px 10px rgba(15, 23, 42, 0.025);
-          transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+          transition: transform 180ms ease, border-color 180ms ease;
         }
 
         .workspace-card:hover {
           transform: translateY(-3px);
           border-color: #c7d2fe;
-          box-shadow: 0 14px 28px rgba(15, 23, 42, 0.075);
         }
 
         .card-top {
@@ -481,7 +476,7 @@ export default function WorkspacesPage() {
         .workspace-icon {
           width: 42px;
           height: 42px;
-          border-radius: 13px;
+          border-radius: 8px;
         }
 
         .delete-button {
@@ -491,7 +486,7 @@ export default function WorkspacesPage() {
           flex: 0 0 auto;
           place-items: center;
           border: 1px solid transparent;
-          border-radius: 10px;
+          border-radius: 8px;
           background: transparent;
           color: #94a3b8;
           cursor: pointer;
@@ -564,7 +559,7 @@ export default function WorkspacesPage() {
           justify-content: center;
           padding: 28px;
           border: 1px dashed #cbd5e1;
-          border-radius: 18px;
+          border-radius: 8px;
           background: rgba(255, 255, 255, 0.65);
           text-align: center;
         }
@@ -575,7 +570,7 @@ export default function WorkspacesPage() {
           height: 52px;
           margin-bottom: 14px;
           place-items: center;
-          border-radius: 16px;
+          border-radius: 8px;
           background: #eef2ff;
           color: #6366f1;
         }
@@ -609,7 +604,7 @@ export default function WorkspacesPage() {
           margin: 0 0 22px;
           padding: 12px 15px;
           border: 1px solid #fecaca;
-          border-radius: 11px;
+          border-radius: 8px;
           background: #fef2f2;
           color: #b91c1c;
           font-size: 0.88rem;
@@ -638,7 +633,7 @@ export default function WorkspacesPage() {
           .create-card {
             margin-bottom: 32px;
             padding: 21px 18px;
-            border-radius: 16px;
+            border-radius: 8px;
           }
 
           .form-grid {

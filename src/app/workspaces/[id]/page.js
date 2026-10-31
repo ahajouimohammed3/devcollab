@@ -96,7 +96,7 @@ function WorkspaceContent({ params }) {
   return (
     <main className="mx-auto min-h-[calc(100vh-76px)] w-full max-w-[1180px] px-4 py-8 sm:px-7 sm:py-12" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
       <Link
-        className="mb-7 inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white/80 px-3 text-sm font-semibold text-slate-600 no-underline shadow-sm transition hover:border-indigo-200 hover:text-indigo-700"
+        className="mb-7 inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white/80 px-3 text-sm font-semibold text-slate-600 no-underline transition hover:border-indigo-200 hover:text-indigo-700"
         href="/workspaces"
       >
         <ArrowLeft size={16} aria-hidden="true" />
@@ -104,10 +104,10 @@ function WorkspaceContent({ params }) {
       </Link>
 
       {workspace && (
-        <header className="relative mb-7 overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-6 text-white shadow-xl shadow-indigo-950/10 sm:p-9">
+        <header className="relative mb-7 overflow-hidden rounded-lg border border-white/80 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-6 text-white sm:p-9">
           <div className="pointer-events-none absolute -end-16 -top-32 size-80 rounded-full bg-indigo-400/15 blur-3xl" />
           <div className="relative flex items-start gap-4">
-            <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/10 text-indigo-200">
+            <span className="grid size-12 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/10 text-indigo-200">
               <BriefcaseBusiness size={22} />
             </span>
             <div className="min-w-0">
@@ -127,7 +127,7 @@ function WorkspaceContent({ params }) {
 
       <section className="luxury-card mb-9 p-5 sm:p-7">
         <div className="mb-6 flex items-start gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-indigo-50 text-indigo-700">
+          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-indigo-50 text-indigo-700">
             <Plus size={19} />
           </span>
           <div>
@@ -197,7 +197,7 @@ function WorkspaceContent({ params }) {
           </div>
         ) : projects.length === 0 ? (
           <div className="luxury-card flex min-h-52 flex-col items-center justify-center p-8 text-center">
-            <span className="mb-3 grid size-12 place-items-center rounded-2xl bg-indigo-50 text-indigo-600">
+            <span className="mb-3 grid size-12 place-items-center rounded-lg bg-indigo-50 text-indigo-600">
               <BriefcaseBusiness size={22} />
             </span>
             <h3 className="m-0 text-base font-bold text-slate-800">
@@ -210,16 +210,16 @@ function WorkspaceContent({ params }) {
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {projects.map((project) => (
-              <article key={project.id} className="group min-w-0 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.2)] transition hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl">
+              <article key={project.id} className="group min-w-0 rounded-lg border border-slate-200/80 bg-white p-5 transition hover:-translate-y-1 hover:border-indigo-200">
                 <div className="mb-5 flex items-start justify-between gap-3">
-                  <span className="grid size-10 place-items-center rounded-xl bg-violet-50 text-violet-700">
+                  <span className="grid size-10 place-items-center rounded-lg bg-violet-50 text-violet-700">
                     <BriefcaseBusiness size={19} />
                   </span>
                   <button
                     type="button"
                     onClick={() => handleDeleteProject(project.id)}
                     disabled={deletingProjectId === project.id}
-                    className="grid size-9 place-items-center rounded-xl text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
+                    className="grid size-9 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
                     aria-label={locale === 'ar' ? 'حذف المشروع' : locale === 'fr' ? 'Supprimer le projet' : 'Delete project'}
                   >
                     {deletingProjectId === project.id ? <LoaderCircle className="animate-spin" size={17} /> : <Trash2 size={17} />}

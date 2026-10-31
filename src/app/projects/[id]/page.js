@@ -226,7 +226,7 @@ function ProjectContent({ params }) {
       <div className="flex justify-between items-center mb-6">
         {project && (
           <Link 
-            className="text-indigo-600 hover:text-indigo-700 text-sm font-semibold flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-xl shadow-sm border border-indigo-100/50 transition-all hover:shadow-md hover:-translate-x-1" 
+            className="text-indigo-600 hover:text-indigo-700 text-sm font-semibold flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-lg border border-indigo-100/50 transition-all hover:-translate-x-1"
             href={`/workspaces/${project.workspace_id}`}
           >
             <span>←</span> {locale === 'ar' ? 'مساحة العمل' : locale === 'fr' ? 'Espace de travail' : 'Back to Workspace'}
@@ -235,15 +235,15 @@ function ProjectContent({ params }) {
 
         {/* Badge du rôle actuel de l'utilisateur */}
         <div className="flex items-center gap-2">
-          {isAdmin && <span className="bg-amber-500/10 text-amber-600 border border-amber-500/20 text-xs font-bold px-3 py-1.5 rounded-xl">👑 Admin</span>}
-          {!isAdmin && canEdit && <span className="bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 text-xs font-bold px-3 py-1.5 rounded-xl">✍️ Member</span>}
-          {isViewer && <span className="bg-slate-500/10 text-slate-600 border border-slate-500/20 text-xs font-bold px-3 py-1.5 rounded-xl">👁️ View Only</span>}
+          {isAdmin && <span className="bg-amber-500/10 text-amber-600 border border-amber-500/20 text-xs font-bold px-3 py-1.5 rounded-lg">👑 Admin</span>}
+          {!isAdmin && canEdit && <span className="bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 text-xs font-bold px-3 py-1.5 rounded-lg">✍️ Member</span>}
+          {isViewer && <span className="bg-slate-500/10 text-slate-600 border border-slate-500/20 text-xs font-bold px-3 py-1.5 rounded-lg">👁️ View Only</span>}
         </div>
       </div>
 
       {/* Project Header */}
       {project && (
-        <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-xl shadow-indigo-500/5 border border-white/80 mb-6 relative overflow-hidden">
+        <div className="bg-white/80 backdrop-blur-xl p-8 rounded-lg border border-white/80 mb-6 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
           <h1 className="text-4xl font-black text-slate-800 tracking-tight mb-2">{project.name}</h1>
           <p className="text-slate-500 text-base max-w-2xl leading-relaxed">{project.description || 'Aucune description supplémentaire pour ce projet pour le moment.'}</p>
@@ -251,7 +251,7 @@ function ProjectContent({ params }) {
       )}
 
       {/* Barre de statistiques et progression en direct */}
-      <div className="bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-lg shadow-indigo-500/5 border border-white/80 mb-8">
+      <div className="bg-white/80 backdrop-blur-xl p-6 rounded-lg border border-white/80 mb-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -266,15 +266,15 @@ function ProjectContent({ params }) {
           </div>
 
           <div className="flex gap-3 w-full md:w-auto">
-            <div className="flex-1 md:flex-initial bg-slate-100/80 px-4 py-2.5 rounded-2xl text-center border border-slate-200/50">
+            <div className="flex-1 md:flex-initial bg-slate-100/80 px-4 py-2.5 rounded-lg text-center border border-slate-200/50">
               <span className="block text-[10px] font-extrabold uppercase text-slate-500">📌 To Do</span>
               <span className="text-lg font-black text-slate-700">{todoTasks}</span>
             </div>
-            <div className="flex-1 md:flex-initial bg-indigo-50 px-4 py-2.5 rounded-2xl text-center border border-indigo-100/50">
+            <div className="flex-1 md:flex-initial bg-indigo-50 px-4 py-2.5 rounded-lg text-center border border-indigo-100/50">
               <span className="block text-[10px] font-extrabold uppercase text-indigo-500">⏳ In Progress</span>
               <span className="text-lg font-black text-indigo-700">{inProgressTasks}</span>
             </div>
-            <div className="flex-1 md:flex-initial bg-emerald-50 px-4 py-2.5 rounded-2xl text-center border border-emerald-100/50">
+            <div className="flex-1 md:flex-initial bg-emerald-50 px-4 py-2.5 rounded-lg text-center border border-emerald-100/50">
               <span className="block text-[10px] font-extrabold uppercase text-emerald-500">✅ Done</span>
               <span className="text-lg font-black text-emerald-700">{completedTasks}</span>
             </div>
@@ -283,7 +283,7 @@ function ProjectContent({ params }) {
 
         <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden p-0.5 border border-slate-200/50">
           <div
-            className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 h-full rounded-full transition-all duration-500 ease-out shadow-sm"
+            className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 h-full rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progressPercentage}%` }}
           ></div>
         </div>
@@ -291,7 +291,7 @@ function ProjectContent({ params }) {
 
       {/* Formulaire de création de tâche - Affiché uniquement pour les rôles autorisés (Admin / Member) */}
       {canEdit && (
-        <form onSubmit={handleCreateTask} className="bg-white/90 backdrop-blur-xl p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100/80 mb-8">
+        <form onSubmit={handleCreateTask} className="bg-white/90 backdrop-blur-xl p-8 rounded-lg border border-slate-100/80 mb-8">
           <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
             <span className="w-2.5 h-6 bg-indigo-600 rounded-full"></span>
             {t('projects.createTitle')}
@@ -304,7 +304,7 @@ function ProjectContent({ params }) {
                 type="text"
                 value={taskTitle}
                 onChange={(e) => setTaskTitle(e.target.value)}
-                className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
+                className="w-full p-3.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
                 placeholder={t('projects.namePlaceholder')}
                 required
               />
@@ -318,7 +318,7 @@ function ProjectContent({ params }) {
                 type="text"
                 value={taskAssignee}
                 onChange={(e) => setTaskAssignee(e.target.value)}
-                className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
+                className="w-full p-3.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
                 placeholder="Nom ou Email"
               />
             </div>
@@ -331,7 +331,7 @@ function ProjectContent({ params }) {
                 type="date"
                 value={taskDueDate}
                 onChange={(e) => setTaskDueDate(e.target.value)}
-                className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
+                className="w-full p-3.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
               />
             </div>
 
@@ -342,7 +342,7 @@ function ProjectContent({ params }) {
               <select
                 value={taskPriority}
                 onChange={(e) => setTaskPriority(e.target.value)}
-                className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all cursor-pointer"
+                className="w-full p-3.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all cursor-pointer"
               >
                 <option value="low">🌱 Basse</option>
                 <option value="medium">⚡ Moyenne</option>
@@ -359,7 +359,7 @@ function ProjectContent({ params }) {
               type="text"
               value={taskLabels}
               onChange={(e) => setTaskLabels(e.target.value)}
-              className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
+              className="w-full p-3.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
               placeholder="e.g. Frontend, UI/UX, Bug"
             />
           </div>
@@ -369,7 +369,7 @@ function ProjectContent({ params }) {
             <textarea
               value={taskDesc}
               onChange={(e) => setTaskDesc(e.target.value)}
-              className="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
+              className="w-full p-3.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 bg-slate-50/55 transition-all"
               placeholder={t('projects.descPlaceholder')}
               rows={2}
             />
@@ -377,7 +377,7 @@ function ProjectContent({ params }) {
           <button
             type="submit"
             disabled={loading}
-            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold px-7 py-3.5 rounded-2xl text-sm transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:translate-y-0"
+            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold px-7 py-3.5 rounded-lg text-sm transition-all hover:-translate-y-0.5 active:translate-y-0"
           >
             {loading ? t('projects.loading') : `✨ ${t('projects.submitBtn')}`}
           </button>
@@ -393,7 +393,7 @@ function ProjectContent({ params }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher une tâche, un responsable ou un label..."
-            className="w-full pl-11 pr-4 py-3.5 bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 text-sm transition-all"
+            className="w-full pl-11 pr-4 py-3.5 bg-white/80 backdrop-blur-md border border-slate-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 text-sm transition-all"
           />
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2">
@@ -401,9 +401,9 @@ function ProjectContent({ params }) {
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`px-5 py-3 text-xs font-bold rounded-2xl transition-all shadow-sm ${
+              className={`px-5 py-3 text-xs font-bold rounded-lg transition-all ${
                 statusFilter === status
-                  ? 'bg-slate-900 text-white shadow-slate-900/20 scale-105'
+                  ? 'bg-slate-900 text-white scale-105'
                   : 'bg-white/80 backdrop-blur-md border border-slate-200 text-slate-600 hover:bg-slate-50'
               }`}
             >
@@ -425,15 +425,15 @@ function ProjectContent({ params }) {
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className={`p-5 rounded-3xl border transition-all duration-300 ${
+                  className={`p-5 rounded-lg border transition-all duration-300 ${
                     snapshot.isDraggingOver 
-                      ? 'bg-indigo-50/70 border-indigo-300 shadow-xl shadow-indigo-500/10 ring-4 ring-indigo-500/5' 
-                      : 'bg-white/60 backdrop-blur-xl border-slate-200/80 shadow-sm'
+                      ? 'bg-indigo-50/70 border-indigo-300 ring-4 ring-indigo-500/5'
+                      : 'bg-white/60 backdrop-blur-xl border-slate-200/80'
                   }`}
                 >
-                  <div className={`p-3 rounded-2xl ${col.headerColor} mb-4 flex justify-between items-center font-extrabold text-sm shadow-sm`}>
+                  <div className={`p-3 rounded-lg ${col.headerColor} mb-4 flex justify-between items-center font-extrabold text-sm`}>
                     <span>{col.title}</span>
-                    <span className="bg-white text-slate-700 text-xs px-2.5 py-1 rounded-xl shadow-xs font-mono">{col.tasks.length}</span>
+                    <span className="bg-white text-slate-700 text-xs px-2.5 py-1 rounded-lg font-mono">{col.tasks.length}</span>
                   </div>
 
                   <div className="space-y-3.5 min-h-[250px]">
@@ -446,10 +446,10 @@ function ProjectContent({ params }) {
                             {...provided.dragHandleProps}
                             style={{ ...provided.draggableProps.style }}
                             onClick={() => openTaskModal(task)}
-                            className={`bg-white p-5 rounded-2xl border transition-all duration-200 relative group cursor-pointer ${
+                            className={`bg-white p-5 rounded-lg border transition-all duration-200 relative group cursor-pointer ${
                               snapshot.isDragging 
-                                ? 'shadow-2xl border-indigo-400 rotate-2 scale-105 z-50 bg-indigo-50/30' 
-                                : 'shadow-sm hover:shadow-xl hover:border-indigo-200 border-slate-100'
+                                ? 'border-indigo-400 rotate-2 scale-105 z-50 bg-indigo-50/30'
+                                : 'hover:border-indigo-200 border-slate-100'
                             } ${task.status === 'done' ? 'opacity-75 bg-slate-50/80' : ''}`}
                           >
                             <div className="flex justify-between items-start gap-3 mb-2.5">
@@ -483,7 +483,7 @@ function ProjectContent({ params }) {
 
                             {/* Badge du membre assigné */}
                             {task.assigned_to && (
-                              <div className="mb-3 flex items-center gap-1.5 bg-indigo-50/70 border border-indigo-100 px-2.5 py-1 rounded-xl w-fit">
+                              <div className="mb-3 flex items-center gap-1.5 bg-indigo-50/70 border border-indigo-100 px-2.5 py-1 rounded-lg w-fit">
                                 <span className="text-[11px] font-bold text-indigo-700">👤 {task.assigned_to}</span>
                               </div>
                             )}
@@ -505,7 +505,7 @@ function ProjectContent({ params }) {
                     ))}
                     {provided.placeholder}
                     {col.tasks.length === 0 && (
-                      <div className="flex flex-col items-center justify-center py-12 text-slate-400 border-2 border-dashed border-slate-200/60 rounded-2xl">
+                      <div className="flex flex-col items-center justify-center py-12 text-slate-400 border-2 border-dashed border-slate-200/60 rounded-lg">
                         <span className="text-2xl mb-1">📂</span>
                         <p className="text-xs italic">{t('projects.noTasks')}</p>
                       </div>
@@ -521,7 +521,7 @@ function ProjectContent({ params }) {
       {/* Task Modal - Modale de détails de la tâche et des commentaires */}
       {selectedTask && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn">
-          <div className="bg-white/95 backdrop-blur-2xl border border-white/80 rounded-3xl shadow-2xl max-w-2xl w-full p-6 md:p-8 relative overflow-hidden max-h-[90vh] flex flex-col">
+          <div className="bg-white/95 backdrop-blur-2xl border border-white/80 rounded-lg max-w-2xl w-full p-6 md:p-8 relative overflow-hidden max-h-[90vh] flex flex-col">
             
             {/* Header */}
             <div className="flex justify-between items-start mb-4 pb-4 border-b border-slate-100">
@@ -543,7 +543,7 @@ function ProjectContent({ params }) {
             {/* Scrollable Content */}
             <div className="overflow-y-auto space-y-6 pr-2 flex-1">
               {/* Info grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-lg border border-slate-100 text-xs">
                 <div>
                   <span className="text-slate-400 font-bold block mb-1">📌 Statut</span>
                   <span className="font-extrabold text-indigo-600 uppercase">{selectedTask.status}</span>
@@ -561,7 +561,7 @@ function ProjectContent({ params }) {
               {/* Description */}
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">📝 Description</h3>
-                <p className="text-sm text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-2xl border border-slate-100 whitespace-pre-wrap">
+                <p className="text-sm text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-lg border border-slate-100 whitespace-pre-wrap">
                   {selectedTask.description || 'Aucune description fournie.'}
                 </p>
               </div>
@@ -572,7 +572,7 @@ function ProjectContent({ params }) {
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">🏷️ Labels</h3>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedTask.labels.split(',').map((label, i) => (
-                      <span key={i} className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-100 px-3 py-1 rounded-xl font-bold">
+                      <span key={i} className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-100 px-3 py-1 rounded-lg font-bold">
                         {label.trim()}
                       </span>
                     ))}
@@ -590,7 +590,7 @@ function ProjectContent({ params }) {
                 {/* Liste des commentaires */}
                 <div className="space-y-3 mb-4">
                   {comments.map((c) => (
-                    <div key={c.id} className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 text-xs">
+                    <div key={c.id} className="bg-slate-50 p-3.5 rounded-lg border border-slate-100 text-xs">
                       <div className="flex justify-between items-center mb-1">
                         <span className="font-extrabold text-indigo-600">{c.user_name}</span>
                         <span className="text-[10px] text-slate-400">
@@ -615,7 +615,7 @@ function ProjectContent({ params }) {
                       value={commentAuthor}
                       onChange={(e) => setCommentAuthor(e.target.value)}
                       placeholder="Votre nom (optionnel)"
-                      className="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 bg-slate-50/50"
+                      className="w-full p-2.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 bg-slate-50/50"
                     />
                     <div className="flex gap-2">
                       <input
@@ -623,13 +623,13 @@ function ProjectContent({ params }) {
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         placeholder="Écrire un commentaire..."
-                        className="flex-1 p-3 border border-slate-200 rounded-2xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 bg-slate-50/55"
+                        className="flex-1 p-3 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 bg-slate-50/55"
                         required
                       />
                       <button
                         type="submit"
                         disabled={commentLoading}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-3 rounded-2xl text-xs transition shadow-md shadow-indigo-500/20"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-3 rounded-lg text-xs transition"
                       >
                         {commentLoading ? '...' : 'Envoyer'}
                       </button>

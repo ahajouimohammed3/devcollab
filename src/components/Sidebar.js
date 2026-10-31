@@ -144,8 +144,8 @@ export default function Sidebar() {
         <Link
           href="/dashboard"
           aria-current={isDashboard ? 'page' : undefined}
-          className={`flex min-h-11 items-center justify-center gap-2 rounded-xl text-xs font-semibold no-underline ${
-            isDashboard ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-500'
+          className={`flex min-h-11 items-center justify-center gap-2 rounded-lg text-xs font-semibold no-underline ${
+            isDashboard ? 'bg-indigo-600 text-white' : 'text-slate-500'
           }`}
         >
           <LayoutDashboard size={16} aria-hidden="true" />
@@ -154,8 +154,8 @@ export default function Sidebar() {
         <Link
           href="/workspaces"
           aria-current={isWorkspaceList ? 'page' : undefined}
-          className={`flex min-h-11 items-center justify-center gap-2 rounded-xl text-xs font-semibold no-underline ${
-            isWorkspaceList ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' : 'text-slate-500'
+          className={`flex min-h-11 items-center justify-center gap-2 rounded-lg text-xs font-semibold no-underline ${
+            isWorkspaceList ? 'bg-indigo-600 text-white' : 'text-slate-500'
           }`}
         >
           <BriefcaseBusiness size={16} aria-hidden="true" />

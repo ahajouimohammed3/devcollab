@@ -66,14 +66,14 @@ export default function Navbar() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/75 bg-white/85 shadow-[0_4px_18px_-12px_rgba(15,23,42,0.2)] backdrop-blur-2xl">
+    <header className="sticky top-0 z-50 border-b border-slate-200/75 bg-white/85 backdrop-blur-2xl">
       <div className="mx-auto flex h-[68px] max-w-[1680px] items-center justify-between gap-4 px-4 sm:h-[76px] sm:px-7">
         <Link
           href="/workspaces"
           className="group flex min-w-0 items-center gap-3 no-underline"
           aria-label="DevCollab"
         >
-          <span className="grid size-10 shrink-0 place-items-center rounded-[14px] bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white shadow-lg shadow-indigo-600/25 transition-transform duration-200 group-hover:-rotate-3 group-hover:scale-105">
+          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white transition-transform duration-200 group-hover:-rotate-3 group-hover:scale-105">
             <Sparkles size={20} strokeWidth={2.2} />
           </span>
           <span className="truncate text-[1.2rem] font-extrabold tracking-[-0.045em] text-slate-900 sm:text-[1.35rem]">
@@ -84,13 +84,13 @@ export default function Navbar() {
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
           <Link
             href="/workspaces"
-            className="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-indigo-700"
+            className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-indigo-700"
           >
             {copy.workspace}
           </Link>
           <Link
             href="/dashboard"
-            className="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-indigo-700"
+            className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-indigo-700"
           >
             {copy.dashboard}
           </Link>
@@ -98,7 +98,7 @@ export default function Navbar() {
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <div
-            className="flex items-center gap-0.5 rounded-xl border border-slate-200/80 bg-slate-50 p-1"
+            className="flex items-center gap-0.5 rounded-lg border border-slate-200/80 bg-slate-50 p-1"
             aria-label="Language"
           >
             <Languages className="mx-1 hidden text-slate-400 sm:block" size={15} aria-hidden="true" />
@@ -110,7 +110,7 @@ export default function Navbar() {
                 aria-pressed={locale === language.value}
                 className={`min-h-7 rounded-lg px-2 text-[0.7rem] font-bold transition ${
                   locale === language.value
-                    ? 'bg-white text-indigo-700 shadow-sm ring-1 ring-slate-200/80'
+                    ? 'bg-white text-indigo-700 ring-1 ring-slate-200/80'
                     : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
@@ -125,14 +125,14 @@ export default function Navbar() {
               onClick={() => setShowNotifications((isOpen) => !isOpen)}
               aria-label={copy.notifications}
               aria-expanded={showNotifications}
-              className="relative grid size-10 place-items-center rounded-xl border border-slate-200/80 bg-white text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+              className="relative grid size-10 place-items-center rounded-lg border border-slate-200/80 bg-white text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
             >
               <Bell size={18} />
               <span className="absolute right-2 top-2 size-2 rounded-full border-2 border-white bg-rose-500" />
             </button>
 
             {showNotifications && (
-              <div className="absolute end-0 top-[calc(100%+12px)] z-50 w-[min(340px,calc(100vw-24px))] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-900/10">
+              <div className="absolute end-0 top-[calc(100%+12px)] z-50 w-[min(340px,calc(100vw-24px))] rounded-lg border border-slate-200 bg-white p-4">
                 <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-3">
                   <h2 className="text-sm font-bold text-slate-900">{copy.notifications}</h2>
                   <span className="rounded-full bg-indigo-50 px-2 py-1 text-[0.68rem] font-bold text-indigo-700">
@@ -143,7 +143,7 @@ export default function Navbar() {
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`rounded-xl border p-3 ${
+                      className={`rounded-lg border p-3 ${
                         notification.unread
                           ? 'border-indigo-100 bg-indigo-50/60'
                           : 'border-slate-100 bg-slate-50/70'
