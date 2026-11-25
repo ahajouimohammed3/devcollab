@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, ChevronDown, Languages, Sparkles } from 'lucide-react'
+import { Bell, ChevronDown, Languages } from 'lucide-react'
 import { UserButton, useUser } from '@clerk/nextjs'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslation } from '@/context/LanguageContext'
 
@@ -73,9 +74,14 @@ export default function Navbar() {
           className="group flex min-w-0 items-center gap-3 no-underline"
           aria-label="DevCollab"
         >
-          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white transition-transform duration-200 group-hover:-rotate-3 group-hover:scale-105">
-            <Sparkles size={20} strokeWidth={2.2} />
-          </span>
+          <Image
+            src="/devcollab-mark.png"
+            alt=""
+            width={322}
+            height={213}
+            aria-hidden="true"
+            className="h-auto w-11 shrink-0 transition-transform duration-200 group-hover:scale-105 sm:w-12"
+          />
           <span className="truncate text-[1.2rem] font-extrabold tracking-[-0.045em] text-slate-900 sm:text-[1.35rem]">
             Dev<span className="text-indigo-600">Collab</span>
           </span>

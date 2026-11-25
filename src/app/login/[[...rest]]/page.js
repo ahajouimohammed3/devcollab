@@ -1,19 +1,22 @@
 'use client'
 
 import { SignIn } from '@clerk/nextjs'
+import Image from 'next/image'
 import Link from 'next/link'
 
 export default function LoginPage() {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-indigo-50/60 to-violet-50/50 px-4 py-12">
-      <div className="pointer-events-none absolute -left-32 -top-32 size-96 rounded-full bg-indigo-200/30 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -right-24 size-[30rem] rounded-full bg-violet-200/30 blur-3xl" />
-      <div className="relative flex w-full max-w-md flex-col items-center gap-6">
-        <Link href="/login" className="flex items-center gap-3 text-xl font-extrabold tracking-tight text-slate-900 no-underline">
-          <span className="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-700 text-sm text-white">
-            D
-          </span>
-          <span>Dev<span className="text-indigo-600">Collab</span></span>
+    <main className="login-page-background relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10 sm:py-14">
+      <div className="relative flex w-full max-w-md flex-col items-center gap-7 sm:gap-8">
+        <Link href="/login" className="flex items-center justify-center no-underline">
+          <Image
+            src="/devcollab-logo-transparent.png"
+            alt="DevCollab"
+            width={629}
+            height={347}
+            priority
+            className="h-auto w-56 max-w-[82vw] sm:w-64"
+          />
         </Link>
         <SignIn
           path="/login"
@@ -22,7 +25,7 @@ export default function LoginPage() {
           forceRedirectUrl="/workspaces"
           appearance={{
             elements: {
-              card: 'rounded-lg border border-white/80',
+              card: 'rounded-2xl border border-white/80 bg-white/90 shadow-2xl shadow-slate-900/10 backdrop-blur-xl',
               headerTitle: 'font-bold tracking-tight text-slate-900',
               headerSubtitle: 'text-slate-500',
               formButtonPrimary: 'font-semibold',

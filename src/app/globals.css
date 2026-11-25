@@ -53,6 +53,14 @@ a {
   background: rgba(99, 102, 241, 0.2);
 }
 
+.login-page-background {
+  background:
+    radial-gradient(ellipse 44rem 32rem at 12% 14%, rgba(35, 146, 196, 0.14), transparent 70%),
+    radial-gradient(ellipse 40rem 30rem at 88% 16%, rgba(245, 152, 86, 0.15), transparent 70%),
+    radial-gradient(ellipse 54rem 38rem at 56% 100%, rgba(111, 82, 160, 0.12), transparent 72%),
+    linear-gradient(135deg, #f8fbff 0%, #f6f7ff 54%, #fffaf4 100%);
+}
+
 .app-shell {
   min-height: 100vh;
 }

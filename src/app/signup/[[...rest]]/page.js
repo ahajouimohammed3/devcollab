@@ -1,6 +1,7 @@
 'use client'
 
 import { SignUp } from '@clerk/nextjs'
+import Image from 'next/image'
 import Link from 'next/link'
 
 export default function SignUpPage() {
@@ -9,11 +10,15 @@ export default function SignUpPage() {
       <div className="pointer-events-none absolute -left-32 -top-32 size-96 rounded-full bg-indigo-200/30 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-40 -right-24 size-[30rem] rounded-full bg-violet-200/30 blur-3xl" />
       <div className="relative flex w-full max-w-md flex-col items-center gap-6">
-        <Link href="/login" className="flex items-center gap-3 text-xl font-extrabold tracking-tight text-slate-900 no-underline">
-          <span className="grid size-10 place-items-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-700 text-sm text-white">
-            D
-          </span>
-          <span>Dev<span className="text-indigo-600">Collab</span></span>
+        <Link href="/login" className="flex items-center justify-center no-underline">
+          <Image
+            src="/devcollab-logo.png"
+            alt="DevCollab"
+            width={629}
+            height={347}
+            priority
+            className="h-auto w-44 max-w-[70vw] sm:w-52"
+          />
         </Link>
         <SignUp
           path="/signup"

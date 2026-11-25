@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useUser } from '@clerk/nextjs'
-import { BriefcaseBusiness, LayoutDashboard, Plus, Sparkles } from 'lucide-react'
+import { BriefcaseBusiness, LayoutDashboard, Plus } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -135,7 +136,14 @@ export default function Sidebar() {
         </div>
 
         <div className="app-sidebar-footer flex items-center gap-2">
-          <Sparkles size={14} className="shrink-0 text-indigo-400" aria-hidden="true" />
+          <Image
+            src="/devcollab-mark.png"
+            alt=""
+            width={322}
+            height={213}
+            aria-hidden="true"
+            className="h-auto w-5 shrink-0"
+          />
           {copy.footer}
         </div>
       </aside>
